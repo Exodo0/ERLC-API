@@ -43,5 +43,5 @@ getServerFunc();
 
 ### Credits
 
-Library Re-Development - [0xRaptor](https://twitter.com/0Adexus0)
+Library Re-Development - [Egologics](https://twitter.com/0Adexus0)
 API Development - [Police Roleplay Community](https://twitter.com/PRC_Roblox)
