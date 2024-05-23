@@ -44,5 +44,7 @@ getServerFunc();
 ### Credits
 
 Library Re-Development - [Egologics](https://twitter.com/0Adexus0)
+
 API Development - [Police Roleplay Community](https://twitter.com/PRC_Roblox)
+
 Apply for more API request limits - [Discord](https://discord.gg/prc)
