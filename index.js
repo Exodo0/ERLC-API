@@ -1,1 +1,1 @@
-module.exports = require("./src/erlc");
+module.exports = require('./src/erlc')
