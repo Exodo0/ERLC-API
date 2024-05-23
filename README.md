@@ -17,7 +17,7 @@ Setting up is super simple:
 
 const erlc = require("erlc");
 const client = new erlc.Client({
-  globalToken: "", // Here you enter your global token provided for the API
+  globalToken: "", // You get the global key directly from the ERLC developers. To increase your API request limits
 });
 client.config(); // Registers your client
 ```
@@ -30,7 +30,7 @@ Now you can start using API Methods - here are a few examples:
 const erlc = require("erlc");
 
 const getServerFunc = async () => {
-  const serverId = ""; // The server ApiKey you wish to target
+  const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
   const server = await erlc.getServer(serverId).catch(console.log); // Gets the server, logs any errors
 
   console.log(server); // Logs the server object
@@ -45,3 +45,4 @@ getServerFunc();
 
 Library Re-Development - [Egologics](https://twitter.com/0Adexus0)
 API Development - [Police Roleplay Community](https://twitter.com/PRC_Roblox)
+Apply for more API request limits - [Discord](https://discord.gg/prc)
