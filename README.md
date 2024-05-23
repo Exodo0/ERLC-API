@@ -6,7 +6,7 @@ A lightweight API Wrapper with 100% coverage of the ER:LC API. Fixed Error and I
 
 First you need to install the package.
 
-`npm i erlc`
+`npm i erlc-api`
 
 ### Setting Up
 
