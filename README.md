@@ -25,15 +25,27 @@ client.config(); // Registers your client
 Now you can start using API Methods - here are a few examples:
 
 ```js
-// api.js
-
-const erlc = require("erlc");
+// GetServerInfo.js
+const erlc = require("erlc-api");
 
 const getServerFunc = async () => {
   const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
   const server = await erlc.getServer(serverId).catch(console.log); // Gets the server, logs any errors
 
   console.log(server); // Logs the server object
+
+  //  Expected Response:
+  // {
+  //   Name: "Your Sever Name",
+  //   CurrentPlayers: 0,
+  //   MaxPlayers: 40,
+  //   JoinKey: "Your Code Join",
+  //   AccVerifiedReq: "Disabled" | "Email" | "Phone/ID",
+  //   TeamBalance: true or false ,
+  //   OwnerUsername: "Your Name",
+  //   CoOwnerUsernames: [],
+  //   VanityURL: "https://policeroleplay.community/join?code=YourCode",
+  // },
 };
 
 getServerFunc();
