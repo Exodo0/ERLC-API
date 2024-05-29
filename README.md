@@ -39,6 +39,10 @@ const getServerFunc = async () => {
 getServerFunc();
 ```
 
+### [Discord Bot](https://discord.com/oauth2/authorize?client_id=1014990793280323624)
+
+The Discord Bot Back Online 29/05/2024
+
 ### [PRC API Docs](https://apidocs.policeroleplay.community/reference/api-reference)
 
 ### Credits
