@@ -55,6 +55,8 @@ getServerFunc();
 
 The Discord Bot Back Online 29/05/2024
 
+## [Module Examples](https://scarlet-2.gitbook.io/erlc-api/)
+
 ### [PRC API Docs](https://apidocs.policeroleplay.community/reference/api-reference)
 
 ### Credits
