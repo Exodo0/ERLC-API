@@ -25,12 +25,12 @@ Now you can start using API Methods - here are a few examples:
 
 ```js
 // GetServerInfo.js
-const erlc = require("erlc-api");
+const erlc = require("erlc-api"); //JS
+import erlc from "erlc-api"; //  Module or typeScript
 
 const getServerFunc = async () => {
   const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
   const server = await erlc.getServer(serverId).catch(console.log); // Gets the server, logs any errors
-
   console.log(server); // Logs the server object
 
   //  Expected Response:
@@ -48,6 +48,30 @@ const getServerFunc = async () => {
 };
 
 getServerFunc();
+```
+
+```js
+// GetPlayers.js
+
+const erlc = require("erlc-api"); //JS
+import erlc from "erlc-api"; //  Module or typeScript
+
+const getPlayersFunc = async () => {
+  const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
+  const server = await erlc.getPlayers(serverId).catch(console.log); // Gets the server, logs any errors
+  console.log(server); // Logs the server object
+
+  //  Expected Response:
+  // [
+  // 	{
+  // 		"Permission": "Server Owner" Or Member, Moderator,
+  // 		"Player": "Player-Username and ID" ,
+  // 		"Team": "Civilian" Or Fire, Police, Sherift
+  // 	}
+  // ]
+};
+
+getPlayersFunc();
 ```
 
 ### [Discord Bot](https://discord.com/oauth2/authorize?client_id=1014990793280323624)
