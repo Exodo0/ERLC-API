@@ -14,7 +14,6 @@ Setting up is super simple:
 
 ```js
 // index.js
-
 const erlc = require("erlc");
 const client = new erlc.Client({
   globalToken: "", // You get the global key directly from the ERLC developers. To increase your API request limits
