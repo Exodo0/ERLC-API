@@ -98,6 +98,8 @@ The Discord Bot Back Online 29/05/2024
 
 ### [PRC API Docs](https://apidocs.policeroleplay.community/reference/api-reference)
 
+## [Liveries]("https://github.com/Exodo0/ERLC-API/tree/main/Custom%20Liveries")
+
 ### Credits
 
 Library Re-Development - [Egologics](https://twitter.com/0Adexus0)
