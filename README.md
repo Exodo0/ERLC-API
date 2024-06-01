@@ -1,6 +1,7 @@
 # ER:LC API Wrapper
 
 A lightweight API Wrapper with 100% coverage of the ER:LC API. Fixed Error and Improvements
+7
 
 ## Getting Started
 
@@ -52,7 +53,6 @@ getServerFunc();
 
 ```js
 // GetPlayers.js
-
 const erlc = require("erlc-api"); //JS
 import erlc from "erlc-api"; //  Module or typeScript
 
@@ -60,7 +60,6 @@ const getPlayersFunc = async () => {
   const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
   const server = await erlc.getPlayers(serverId).catch(console.log); // Gets the server, logs any errors
   console.log(server); // Logs the server object
-
   //  Expected Response:
   // [
   // 	{
@@ -70,8 +69,25 @@ const getPlayersFunc = async () => {
   // 	}
   // ]
 };
-
 getPlayersFunc();
+```
+
+```js
+//getmodCalls.js
+const erlc = require("erlc-api"); //JS
+import erlc from "erlc-api"; //  Module or typeScript
+
+const getPlayersFunc = async () => {
+  const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
+  const server = await erlc.getModcallLogs(serverId).catch(console.log); // Gets the server, logs any errors
+  console.log(server); // Logs the server object
+  //  Expected Response:
+  // {
+  //  Caller: ErlcPlayer;
+  //   Moderator?: ErlcPlayer; // If call is unanswered property is undefined
+  //   Timestamp: number;
+  //  }
+};
 ```
 
 ### [Discord Bot](https://discord.com/oauth2/authorize?client_id=1014990793280323624)
