@@ -77,7 +77,7 @@ getPlayersFunc();
 const erlc = require("erlc-api"); //JS
 import erlc from "erlc-api"; //  Module or typeScript
 
-const getPlayersFunc = async () => {
+const getModCallsFunc = async () => {
   const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
   const server = await erlc.getModcallLogs(serverId).catch(console.log); // Gets the server, logs any errors
   console.log(server); // Logs the server object
@@ -88,6 +88,7 @@ const getPlayersFunc = async () => {
   //   Timestamp: number;
   //  }
 };
+getModCallsFunc()
 ```
 
 ### [Discord Bot](https://discord.com/oauth2/authorize?client_id=1014990793280323624)
