@@ -7,6 +7,8 @@ declare module "erlc-api" {
 
   type PlayerId = string;
   type PlayerName = string;
+  type TextureName = string;
+  type CarName = string;
 
   export type ErlcPlayer = `${PlayerName}:${PlayerId}`; // Playername:UserID
   export type ErlcPlayerPermission =
@@ -57,6 +59,12 @@ declare module "erlc-api" {
 
   export type ServerBan = Record<PlayerId, PlayerName>;
 
+  export interface VehiclesLog {
+    Texture: string | null;
+    Name: string;
+    Owner: ErlcPlayer;
+  }
+
   export interface VSMCommandBody {
     command: string; // ":h Hey everyone!"
   }
@@ -69,6 +77,7 @@ declare module "erlc-api" {
   export function getPlayers(serverToken: string): Promise<ServerPlayer[]>;
   export function getQueue(serverToken: string): Promise<number[]>;
   export function getServer(serverToken: string): Promise<ServerStatus>;
+  export function getVehicles(serverToken: string): Promise<VehiclesLog[]>;
   export function runCommand(
     serverToken: string,
     command: string
