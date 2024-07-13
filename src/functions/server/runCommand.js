@@ -15,8 +15,10 @@ module.exports = (serverToken, command) => {
         method: "POST",
         body: params,
       });
+
       if (!res.ok) {
-        return reject(data);
+        const errorData = await res.json(); 
+        return reject(errorData); 
       }
 
       resolve(true);
