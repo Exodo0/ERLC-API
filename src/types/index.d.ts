@@ -69,6 +69,7 @@ declare module "erlc-api" {
     command: string; // ":h Hey everyone!"
   }
 
+
   export function getBans(serverToken: string): Promise<ServerBan>;
   export function getCommandLogs(serverToken: string): Promise<CommandLog[]>;
   export function getJoinLogs(serverToken: string): Promise<JoinLog[]>;
