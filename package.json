@@ -1,38 +1,27 @@
 {
   "name": "erlc-api",
-  "version": "2.3.3",
-  "description": "A modern API wrapper for ER:LC with TypeScript and browser support",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
-  "browser": "dist/browser/erlc.min.js",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "npm run clean && npm run build:all",
-    "build:all": "npm run build:esm && npm run build:cjs && npm run build:browser && npm run build:types",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:browser": "webpack --config webpack.config.js",
-    "build:types": "tsc -p tsconfig.types.json",
-    "clean": "rimraf dist",
-    "test": "jest",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "docs": "typedoc"
-  },
+  "version": "1.3.11",
+  "description": "An ER:LC API wrapper for JS/TS",
+  "main": "index.js",
+  "types": "src/types/index.d.ts",
   "keywords": [
     "erlc",
     "roblox",
     "prc",
     "erlc-api",
-    "liberty-county",
-    "typescript",
-    "browser"
+    "liberty-county"
   ],
   "author": "egologics",
   "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Exodo0/ERLC-API.git"
@@ -40,25 +29,5 @@
   "bugs": {
     "url": "https://github.com/Exodo0/ERLC-API/issues"
   },
-  "homepage": "https://github.com/Exodo0/ERLC-API#readme",
-  "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.1",
-    "@typescript-eslint/eslint-plugin": "^8.23.0",
-    "@typescript-eslint/parser": "^8.23.0",
-    "eslint": "^9.19.0",
-    "jest": "^29.7.0",
-    "prettier": "^3.4.2",
-    "rimraf": "^6.0.1",
-    "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.2",
-    "typedoc": "^0.27.6",
-    "typescript": "^5.7.3",
-    "webpack": "^5.97.1",
-    "webpack-cli": "^6.0.1"
-  },
-  "dependencies": {
-    "axios": "^1.7.9",
-    "erlc-api": "file:"
-  }
+  "homepage": "https://github.com/Exodo0/ERLC-API#readme"
 }
