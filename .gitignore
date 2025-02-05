@@ -1,6 +1,2 @@
 CustomLiveries
 .github
-node_modules
-.dist
-.coverage
-coverage
