@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run build to generate dist files
-        run: npm run build
-
       - name: Check if version already exists on NPM
         id: check-version
         run: |
