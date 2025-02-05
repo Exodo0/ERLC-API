@@ -12,6 +12,10 @@
   "scripts": {
     "build": "npm run clean && npm run build:all",
     "build:all": "npm run build:esm && npm run build:cjs && npm run build:browser && npm run build:types",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:browser": "webpack --config webpack.config.js",
+    "build:types": "tsc -p tsconfig.types.json",
     "clean": "rimraf dist",
     "test": "jest",
     "lint": "eslint src --ext .ts",

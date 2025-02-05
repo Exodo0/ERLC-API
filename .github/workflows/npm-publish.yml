@@ -33,7 +33,6 @@ jobs:
             echo "New version detected. Proceeding with publish."
             echo "should_publish=true" >> $GITHUB_ENV
           fi
-
       - name: Publish package to NPM
         if: env.should_publish == 'true'
         run: npm publish --access public
