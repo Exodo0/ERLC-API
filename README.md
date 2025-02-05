@@ -1,110 +1,126 @@
-# ER:LC API Wrapper
+# ERLC API
 
-A lightweight API Wrapper with 100% coverage of the ER:LC API. Fixed Error and Improvements
-7
+A modern TypeScript/JavaScript API wrapper for ER:LC (Emergency Response: Liberty County) with full browser support.
 
-## Getting Started
+## Features
 
-First you need to install the package.
+- 🚀 Full TypeScript support
+- 🌐 Browser compatible
+- ⚡ Promise-based API
+- 🛡️ Comprehensive error handling
+- 📘 Type definitions included
+- 🔄 CommonJS and ES Module support
 
-`npm i erlc-api`
+## Installation
 
-### Setting Up
+```bash
+npm install erlc-api
+```
 
-Setting up is super simple:
+## Usage
 
-```js
-// index.js
-const erlc = require("erlc");
-const client = new erlc.Client({
-  globalToken: "", // You get the global key directly from the ERLC developers. To increase your API request limits
+### TypeScript/ES Modules
+```typescript
+import { Client } from 'erlc-api';
+
+const client = new Client({
+  globalToken: 'your-global-token'
 });
-client.config(); // Registers your client
+
+// Get server information
+const serverInfo = await client.getServer('server-token');
+console.log(serverInfo);
+
+// Get players
+const players = await client.getPlayers('server-token');
+console.log(players);
 ```
 
-Now you can start using API Methods - here are a few examples:
+### CommonJS
+```javascript
+const { Client } = require('erlc-api');
 
-```js
-// GetServerInfo.js
-const erlc = require("erlc-api"); //JS
-import erlc from "erlc-api"; //  Module or typeScript
+const client = new Client({
+  globalToken: 'your-global-token'
+});
 
-const getServerFunc = async () => {
-  const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
-  const server = await erlc.getServer(serverId).catch(console.log); // Gets the server, logs any errors
-  console.log(server); // Logs the server object
-
-  //  Expected Response:
-  // {
-  //   Name: "Your Sever Name",
-  //   CurrentPlayers: 0,
-  //   MaxPlayers: 40,
-  //   JoinKey: "Your Code Join",
-  //   AccVerifiedReq: "Disabled" | "Email" | "Phone/ID",
-  //   TeamBalance: true or false ,
-  //   OwnerUsername: "Your Name",
-  //   CoOwnerUsernames: [],
-  //   VanityURL: "https://policeroleplay.community/join?code=YourCode",
-  // },
-};
-
-getServerFunc();
+// Using async/await
+async function getServerInfo() {
+  try {
+    const server = await client.getServer('server-token');
+    console.log(server);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
 ```
 
-```js
-// GetPlayers.js
-const erlc = require("erlc-api"); //JS
-import erlc from "erlc-api"; //  Module or typeScript
+### Browser
+```html
+<script src="node_modules/erlc-api/dist/browser/erlc.min.js"></script>
+<script>
+  const client = new ERLC.Client({
+    globalToken: 'your-global-token'
+  });
 
-const getPlayersFunc = async () => {
-  const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
-  const server = await erlc.getPlayers(serverId).catch(console.log); // Gets the server, logs any errors
-  console.log(server); // Logs the server object
-  //  Expected Response:
-  // [
-  // 	{
-  // 		"Permission": "Server Owner" Or Member, Moderator,
-  // 		"Player": "Player-Username and ID" ,
-  // 		"Team": "Civilian" Or Fire, Police, Sherift
-  // 	}
-  // ]
-};
-getPlayersFunc();
+  client.getServer('server-token')
+    .then(server => console.log(server))
+    .catch(error => console.error(error));
+</script>
 ```
 
-```js
-//getmodCalls.js
-const erlc = require("erlc-api"); //JS
-import erlc from "erlc-api"; //  Module or typeScript
+## API Methods
 
-const getModCallsFunc = async () => {
-  const serverId = ""; // The server ApiKey you wish to target. You can get this api key in your (Server Settings)
-  const server = await erlc.getModcallLogs(serverId).catch(console.log); // Gets the server, logs any errors
-  console.log(server); // Logs the server object
-  //  Expected Response:
-  // {
-  //  Caller: ErlcPlayer;
-  //   Moderator?: ErlcPlayer; // If call is unanswered property is undefined
-  //   Timestamp: number;
-  //  }
-};
-getModCallsFunc()
+- `getServer(serverToken)` - Get server information
+- `getPlayers(serverToken)` - Get list of players
+- `getJoinLogs(serverToken)` - Get join/leave logs
+- `getKillLogs(serverToken)` - Get kill logs
+- `getCommandLogs(serverToken)` - Get command logs
+- `getModcallLogs(serverToken)` - Get modcall logs
+- `getBans(serverToken)` - Get server bans
+- `getVehicles(serverToken)` - Get vehicle information
+- `getQueue(serverToken)` - Get queue information
+- `runCommand(serverToken, command)` - Run a server command
+
+## Error Handling
+
+The library includes custom error classes for better error handling:
+
+```typescript
+import { AuthenticationError, ValidationError, NetworkError } from 'erlc-api';
+
+try {
+  await client.getServer('server-token');
+} catch (error) {
+  if (error instanceof AuthenticationError) {
+    console.error('Authentication failed');
+  } else if (error instanceof ValidationError) {
+    console.error('Invalid input');
+  } else if (error instanceof NetworkError) {
+    console.error('Network error occurred');
+  }
+}
 ```
 
-### [Discord Bot](https://discord.com/oauth2/authorize?client_id=1014990793280323624)
+## Development
 
-The Discord Bot Back Online 29/05/2024
+```bash
+# Install dependencies
+npm install
 
-## [Module Examples](https://scarlet-2.gitbook.io/erlc-api/)
+# Run tests
+npm test
 
-### [PRC API Docs](https://apidocs.policeroleplay.community/reference/api-reference)
+# Build
+npm run build
 
-## [Liveries]("https://github.com/Exodo0/ERLC-API/tree/main/Custom%20Liveries")
+# Lint
+npm run lint
 
-### Credits
+# Format code
+npm run format
+```
 
-Library Re-Development - [Egologics](https://twitter.com/0Adexus0)
+## License
 
-API Development - [Police Roleplay Community](https://twitter.com/PRC_Roblox)
-
-Apply for more API request limits - [Discord](https://discord.gg/prc)
+MIT License - see LICENSE file for details.
