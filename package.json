@@ -1,6 +1,6 @@
 {
   "name": "erlc-api",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A modern API wrapper for ER:LC with TypeScript and browser support",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -12,15 +12,10 @@
   "scripts": {
     "build": "npm run clean && npm run build:all",
     "build:all": "npm run build:esm && npm run build:cjs && npm run build:browser && npm run build:types",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:browser": "webpack --config webpack.config.js",
-    "build:types": "tsc -p tsconfig.types.json",
     "clean": "rimraf dist",
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "prepare": "npm run build",
     "docs": "typedoc"
   },
   "keywords": [
