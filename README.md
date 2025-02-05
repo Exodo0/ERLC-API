@@ -20,11 +20,12 @@ npm install erlc-api
 ## Usage
 
 ### TypeScript/ES Modules
+
 ```typescript
 import { Client } from 'erlc-api';
 
 const client = new Client({
-  globalToken: 'your-global-token'
+  globalToken: 'your-global-token',
 });
 
 // Get server information
@@ -34,14 +35,19 @@ console.log(serverInfo);
 // Get players
 const players = await client.getPlayers('server-token');
 console.log(players);
+
+//Run Command
+const Command = await client.runCommand('server-token', ':h Hello');
+console.log(Command);
 ```
 
 ### CommonJS
+
 ```javascript
 const { Client } = require('erlc-api');
 
 const client = new Client({
-  globalToken: 'your-global-token'
+  globalToken: 'your-global-token',
 });
 
 // Using async/await
@@ -56,16 +62,18 @@ async function getServerInfo() {
 ```
 
 ### Browser
+
 ```html
 <script src="node_modules/erlc-api/dist/browser/erlc.min.js"></script>
 <script>
   const client = new ERLC.Client({
-    globalToken: 'your-global-token'
+    globalToken: 'your-global-token',
   });
 
-  client.getServer('server-token')
-    .then(server => console.log(server))
-    .catch(error => console.error(error));
+  client
+    .getServer('server-token')
+    .then((server) => console.log(server))
+    .catch((error) => console.error(error));
 </script>
 ```
 
