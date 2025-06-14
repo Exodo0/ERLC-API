@@ -1,9 +1,9 @@
 const { BASEURL } = require("../../constants.js");
 
 /**
- * Retrieves the list of banned players from a server
+ * Retrieves server staff information
  * @param {string} serverToken - The server API key
- * @returns {Promise<Object>} Promise that resolves to banned players object
+ * @returns {Promise<Object>} Promise that resolves to server staff object
  */
 module.exports = (serverToken) => {
   return new Promise(async (resolve, reject) => {
@@ -21,7 +21,7 @@ module.exports = (serverToken) => {
         return reject(new Error('Global token not configured. Please initialize the client first.'));
       }
 
-      const res = await fetch.default(`${BASEURL}/server/bans`, {
+      const res = await fetch.default(`${BASEURL}/server/staff`, {
         headers: {
           "Authorization": config.globalToken,
           "Server-Key": serverToken,
@@ -38,7 +38,7 @@ module.exports = (serverToken) => {
       }
 
       const data = await res.json();
-      resolve(data || {});
+      resolve(data || { CoOwners: [], Admins: {}, Mods: {} });
 
     } catch (error) {
       // Handle different types of errors
