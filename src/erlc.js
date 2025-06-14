@@ -10,5 +10,6 @@ exports.getServer = require("./functions/server/getServer.js");
 exports.getQueue = require("./functions/server/getQueue.js");
 exports.runCommand = require("./functions/server/runCommand.js");
 exports.getVehicles = require("./functions/server/getVehicles.js");
+exports.getStaff = require("./functions/server/getStaff.js");
 
 exports.Client = require("./classes/client.js");

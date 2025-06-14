@@ -19,13 +19,14 @@ declare module "erlc-api" {
 
   export interface ServerStatus {
     Name: string; // The server name
-    OwnerId: number; // The roblox id of the server owner
-    CoOwnerIds: number[]; // The roblox ids of the server co owners
+    OwnerUsername: string; // The username of the server owner
+    CoOwnerUsernames: string[]; // The usernames of the server co owners
     CurrentPlayers: number; // The amount of people currently in-game
     MaxPlayers: number; // The amount of people who can join the server including server owner
     JoinKey: string; // The code used to join the private server
     AccVerifiedReq: "Disabled" | "Email" | "Phone/ID"; // The level of verification roblox accounts need to join the private server
     TeamBalance: boolean; // If team balance is enabled or not
+    VanityURL: string; // The vanity URL to join the server
   }
 
   export interface ServerPlayer {
@@ -65,10 +66,15 @@ declare module "erlc-api" {
     Owner: ErlcPlayer;
   }
 
+  export interface ServerStaff {
+    CoOwners: number[];
+    Admins: Record<string, string>;
+    Mods: Record<string, string>;
+  }
+
   export interface VSMCommandBody {
     command: string; // ":h Hey everyone!"
   }
-
 
   export function getBans(serverToken: string): Promise<ServerBan>;
   export function getCommandLogs(serverToken: string): Promise<CommandLog[]>;
@@ -78,6 +84,7 @@ declare module "erlc-api" {
   export function getPlayers(serverToken: string): Promise<ServerPlayer[]>;
   export function getQueue(serverToken: string): Promise<number[]>;
   export function getServer(serverToken: string): Promise<ServerStatus>;
+  export function getStaff(serverToken: string): Promise<ServerStaff>;
   export function getVehicles(serverToken: string): Promise<VehiclesLog[]>;
   export function runCommand(
     serverToken: string,
