@@ -1,4 +1,5 @@
 const { BASEURL } = require("../../constants.js");
+const { processError } = require("../../utils/errorHandler.js");
 
 /**
  * Retrieves server vehicles information
@@ -8,8 +9,8 @@ const { BASEURL } = require("../../constants.js");
 module.exports = (serverToken) => {
   return new Promise(async (resolve, reject) => {
     // Input validation
-    if (!serverToken || typeof serverToken !== 'string') {
-      return reject(new Error('Server token is required and must be a string'));
+    if (!serverToken || typeof serverToken !== "string") {
+      return reject(new Error("Server token is required and must be a string"));
     }
 
     try {
@@ -18,37 +19,35 @@ module.exports = (serverToken) => {
 
       // Check if global token is configured
       if (!config?.globalToken) {
-        return reject(new Error('Global token not configured. Please initialize the client first.'));
+        const error = await processError(
+          new Error(
+            "Global token not configured. Please initialize the client first."
+          )
+        );
+        return reject(error);
       }
 
       const res = await fetch.default(`${BASEURL}/server/vehicles`, {
         headers: {
-          "Authorization": config.globalToken,
+          Authorization: config.globalToken,
           "Server-Key": serverToken,
         },
         timeout: 10000, // 10 second timeout
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown API error' }));
-        const error = new Error(`API Error: ${res.status} - ${errorData.error || res.statusText}`);
-        error.status = res.status;
-        error.data = errorData;
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Unknown API error" }));
+        const error = await processError(res, errorData);
         return reject(error);
       }
 
       const data = await res.json();
       resolve(Array.isArray(data) ? data : []);
-
     } catch (error) {
-      // Handle different types of errors
-      if (error.code === 'ENOTFOUND') {
-        reject(new Error('Network error: Unable to connect to ER:LC API'));
-      } else if (error.name === 'AbortError') {
-        reject(new Error('Request timeout: API took too long to respond'));
-      } else {
-        reject(error);
-      }
+      const processedError = await processError(error);
+      reject(processedError);
     }
   });
 };

@@ -292,17 +292,37 @@ const handleApiCall = async () => {
     const result = await erlc.getServer(serverToken);
     return result;
   } catch (error) {
-    // Handle specific error types
-    if (error.status === 401) {
-      console.error("Authentication failed - check your tokens");
-    } else if (error.status === 404) {
-      console.error("Server not found - check your server token");
-    } else if (error.message.includes("Network error")) {
-      console.error("Connection issue - check your internet connection");
-    } else if (error.message.includes("timeout")) {
-      console.error("Request timed out - try again later");
-    } else {
-      console.error("Unexpected error:", error.message);
+    // The error is now an ErlcError with detailed information
+    console.error(`Error ${error.code}: ${error.message}`);
+    console.error(`Category: ${error.category}, Severity: ${error.severity}`);
+
+    // Handle specific ERLC error codes
+    switch (error.code) {
+      case 2002:
+        console.error(
+          "Invalid server key - get a new one from server settings"
+        );
+        break;
+      case 4001:
+        console.error("Rate limited - reduce request frequency");
+        break;
+      case 3002:
+        console.error("Server offline - wait for players to join");
+        break;
+      case 9999:
+        console.error("Server module outdated - restart server");
+        break;
+    }
+
+    // Show suggested actions
+    if (error.suggestions) {
+      console.error("Suggested actions:");
+      error.suggestions.forEach((action) => console.error(`- ${action}`));
+    }
+
+    // Check if error is retryable
+    if (error.retryable) {
+      console.error("This error might be resolved by retrying");
     }
 
     throw error; // Re-throw if needed
@@ -386,13 +406,62 @@ const joinLogs: JoinLog[] = await erlc.getJoinLogs(serverToken);
 
 ## 🐛 Error Types
 
-The wrapper provides detailed error information:
+The wrapper provides comprehensive error handling with specific ERLC error codes:
 
-- **Network Errors**: Connection issues, DNS resolution failures
-- **Authentication Errors**: Invalid tokens, insufficient permissions
-- **API Errors**: Server-side errors with status codes and messages
-- **Validation Errors**: Invalid input parameters
-- **Timeout Errors**: Requests that take too long to complete
+### ERLC Error Codes
+
+| Code | Category             | Description                            |
+| ---- | -------------------- | -------------------------------------- |
+| 0    | System Error         | Unknown error occurred                 |
+| 1001 | Communication Error  | Error communicating with Roblox server |
+| 1002 | System Error         | Internal system error                  |
+| 2000 | Authentication Error | Missing server key                     |
+| 2001 | Authentication Error | Invalid server key format              |
+| 2002 | Authentication Error | Invalid or expired server key          |
+| 2003 | Authentication Error | Invalid global API key                 |
+| 2004 | Authentication Error | Server key banned                      |
+| 3001 | Request Error        | Invalid command provided               |
+| 3002 | Request Error        | Server offline (no players)            |
+| 4001 | Rate Limit Error     | Rate limited                           |
+| 4002 | Permission Error     | Restricted command                     |
+| 4003 | Content Error        | Prohibited message                     |
+| 9998 | Access Error         | Restricted resource                    |
+| 9999 | Version Error        | Outdated server module                 |
+
+### Error Properties
+
+All errors are instances of `ErlcError` with these properties:
+
+- `code`: ERLC error code or HTTP status
+- `message`: Human-readable error message
+- `category`: Error category (e.g., "AUTHENTICATION_ERROR")
+- `severity`: Error severity ("LOW", "MEDIUM", "HIGH", "CRITICAL")
+- `suggestions`: Array of suggested actions to resolve the error
+- `retryable`: Boolean indicating if the error might be resolved by retrying
+- `timestamp`: ISO timestamp when the error occurred
+
+### Retry Logic Example
+
+```javascript
+async function withRetry(apiCall, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await apiCall();
+    } catch (error) {
+      if (!error.retryable || attempt === maxRetries) {
+        throw error;
+      }
+
+      // Wait before retrying with exponential backoff
+      const delay = 1000 * Math.pow(2, attempt - 1);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
+
+// Usage
+const players = await withRetry(() => erlc.getPlayers(serverToken));
+```
 
 ## 🤝 Contributing
 
