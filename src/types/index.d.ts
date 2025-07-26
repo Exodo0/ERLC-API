@@ -1,4 +1,33 @@
 declare module "erlc-api" {
+  // Error handling types
+  export class ErlcError extends Error {
+    code: string | number;
+    status?: number;
+    category?: string;
+    severity?: string;
+    suggestions?: string[];
+    retryable?: boolean;
+    timestamp: string;
+    originalError?: Error;
+
+    constructor(
+      message: string,
+      code: string | number,
+      status?: number,
+      originalError?: Error
+    );
+    toJSON(): object;
+    toString(): string;
+  }
+
+  export interface ErrorInfo {
+    message: string;
+    description: string;
+    category: string;
+    severity: string;
+    code?: number;
+  }
+
   export interface ClientConfig {
     globalToken: string; // The ER:LC global API token
   }

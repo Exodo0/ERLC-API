@@ -1,4 +1,5 @@
 const { BASEURL } = require("../../constants.js");
+const { processError } = require("../../utils/errorHandler.js");
 
 /**
  * Executes a command on the server
@@ -9,16 +10,16 @@ const { BASEURL } = require("../../constants.js");
 module.exports = (serverToken, command) => {
   return new Promise(async (resolve, reject) => {
     // Input validation
-    if (!serverToken || typeof serverToken !== 'string') {
-      return reject(new Error('Server token is required and must be a string'));
+    if (!serverToken || typeof serverToken !== "string") {
+      return reject(new Error("Server token is required and must be a string"));
     }
 
-    if (!command || typeof command !== 'string') {
-      return reject(new Error('Command is required and must be a string'));
+    if (!command || typeof command !== "string") {
+      return reject(new Error("Command is required and must be a string"));
     }
 
     if (command.trim().length === 0) {
-      return reject(new Error('Command cannot be empty'));
+      return reject(new Error("Command cannot be empty"));
     }
 
     try {
@@ -27,7 +28,12 @@ module.exports = (serverToken, command) => {
 
       // Check if global token is configured
       if (!config?.globalToken) {
-        return reject(new Error('Global token not configured. Please initialize the client first.'));
+        const error = await processError(
+          new Error(
+            "Global token not configured. Please initialize the client first."
+          )
+        );
+        return reject(error);
       }
 
       const requestBody = JSON.stringify({ command: command.trim() });
@@ -35,7 +41,7 @@ module.exports = (serverToken, command) => {
       const res = await fetch.default(`${BASEURL}/server/command`, {
         method: "POST",
         headers: {
-          "Authorization": config.globalToken,
+          Authorization: config.globalToken,
           "Server-Key": serverToken,
           "Content-Type": "application/json",
         },
@@ -44,27 +50,18 @@ module.exports = (serverToken, command) => {
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown API error' }));
-        const error = new Error(`Command execution failed: ${res.status} - ${errorData.error || res.statusText}`);
-        error.status = res.status;
-        error.data = errorData;
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Unknown API error" }));
+        const error = await processError(res, errorData);
         return reject(error);
       }
 
       // Command executed successfully
       resolve(true);
-
     } catch (error) {
-      // Handle different types of errors
-      if (error.code === 'ENOTFOUND') {
-        reject(new Error('Network error: Unable to connect to ER:LC API'));
-      } else if (error.name === 'AbortError') {
-        reject(new Error('Request timeout: Command took too long to execute'));
-      } else if (error.message.includes('JSON')) {
-        reject(new Error('Invalid command format'));
-      } else {
-        reject(error);
-      }
+      const processedError = await processError(error);
+      reject(processedError);
     }
   });
 };

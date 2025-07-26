@@ -2,4 +2,5 @@ CustomLiveries
 .github
 bun.lock
 node_modules
-Test
+
+test-project
