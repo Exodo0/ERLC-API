@@ -11,5 +11,6 @@ exports.getQueue = require("./functions/server/getQueue.js");
 exports.runCommand = require("./functions/server/runCommand.js");
 exports.getVehicles = require("./functions/server/getVehicles.js");
 exports.getStaff = require("./functions/server/getStaff.js");
+exports.resetGlobalKey = require("./functions/global/resetGlobalKey.js");
 
 exports.Client = require("./classes/client.js");
