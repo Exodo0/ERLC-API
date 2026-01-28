@@ -110,7 +110,7 @@ const queue = await erlc.getQueue(serverToken);
 
 We include a GUI tool built with Electron so you can test all API endpoints without writing code. Ideal for verifying your keys and exploring data.
 
-![Electron App Preview](https://via.placeholder.com/800x450.png?text=ERLC+API+Client+Preview)
+![Electron App Preview](Assets/Preview.png)
 
 ### How to use it?
 
