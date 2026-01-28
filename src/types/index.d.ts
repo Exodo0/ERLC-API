@@ -28,7 +28,7 @@ export interface ErrorInfo {
 }
 
 export interface ClientConfig {
-  globalToken: string; // The ER:LC global API token
+  globalToken?: string; // The ER:LC global API token
 }
 
 export const BASEURL = "https://api.policeroleplay.community/v1";
