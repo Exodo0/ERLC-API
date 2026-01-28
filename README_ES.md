@@ -111,7 +111,7 @@ const staff = await erlc.getStaff(serverToken);
 
 Incluimos una herramienta gráfica construida con Electron para que puedas probar todos los endpoints de la API sin escribir código. Ideal para verificar tus keys y explorar la data.
 
-![Electron App Preview](https://via.placeholder.com/800x450.png?text=ERLC+API+Client+Preview)
+![Electron App Preview](Assets/Preview.png))
 
 ### ¿Cómo usarla?
 
