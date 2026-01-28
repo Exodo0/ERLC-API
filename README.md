@@ -104,6 +104,35 @@ const staff = await erlc.getStaff(serverToken);
 const queue = await erlc.getQueue(serverToken);
 ```
 
+---
+
+## 🖥️ Visual Client (Dev Tool)
+
+We include a GUI tool built with Electron so you can test all API endpoints without writing code. Ideal for verifying your keys and exploring data.
+
+![Electron App Preview](https://via.placeholder.com/800x450.png?text=ERLC+API+Client+Preview)
+
+### How to use it?
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Exodo0/ERLC-API.git
+cd ERLC-API
+```
+
+2. Run the visual client:
+```bash
+npm run gui:dev
+```
+
+The app allows you to:
+- Save your credentials (Server Token / Global Token).
+- Test **all** endpoints with a single click.
+- View formatted and colored JSON responses.
+- Run remote commands on your server.
+
+---
+
 ### ⚡ Run Command
 
 Execute commands directly from your code:

@@ -29,6 +29,17 @@ export interface ErrorInfo {
 
 export interface ClientConfig {
   globalToken?: string; // The ER:LC global API token
+  cache?: {
+    enabled?: boolean;
+    ttlMs?: Record<string, number>;
+    staleWhileRevalidate?: boolean;
+  };
+  logger?: {
+    info?: (...args: any[]) => void;
+    warn?: (...args: any[]) => void;
+    error?: (...args: any[]) => void;
+  };
+  fetch?: (url: string, init?: any) => Promise<any>;
 }
 
 export const BASEURL = "https://api.policeroleplay.community/v1";
@@ -122,6 +133,26 @@ export function runCommand(
 export function resetGlobalKey(): Promise<any>;
 
 export class Client {
-  constructor(options: ClientConfig);
+  constructor(options?: ClientConfig);
   config(): ClientConfig;
 }
+
+export const utils: {
+  cache: {
+    DEFAULT_TTLS: Record<string, number>;
+    makeKey: (endpoint: string, serverToken: string, extras?: string) => string;
+    getTTL: (endpoint: string, config: ClientConfig) => number;
+    get: (key: string) => any;
+    set: (key: string, value: any, ttlMs: number) => void;
+    invalidate: (key: string) => void;
+    invalidateByPrefix: (prefix: string) => void;
+  };
+  discord: {
+    formatServerStatus: (server: ServerStatus) => any;
+    formatPlayers: (players: ServerPlayer[]) => any;
+    formatKillLog: (log: KillLog) => any;
+    formatJoinLog: (log: JoinLog) => any;
+    formatCommandLog: (log: CommandLog) => any;
+    formatModCall: (log: ModcallLog) => any;
+  };
+};

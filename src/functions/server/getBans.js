@@ -1,5 +1,6 @@
 const { BASEURL } = require("../../constants.js");
 const { processError } = require("../../utils/errorHandler.js");
+const cache = require("../../utils/cache.js");
 
 /**
  * Retrieves the list of banned players from a server
@@ -24,7 +25,18 @@ module.exports = (serverToken) => {
         headers["Authorization"] = config.globalToken;
       }
 
-      const res = await fetch.default(`${BASEURL}/server/bans`, {
+      const endpoint = "bans";
+      const f = config?.fetch || fetch.default;
+      const useCache = !!config?.cache?.enabled;
+      const key = cache.makeKey(endpoint, serverToken);
+      if (useCache) {
+        const cached = cache.get(key);
+        if (cached) {
+          return resolve(cached || {});
+        }
+      }
+
+      const res = await f(`${BASEURL}/server/bans`, {
         headers: headers,
         timeout: 10000, // 10 second timeout
       });
@@ -38,6 +50,10 @@ module.exports = (serverToken) => {
       }
 
       const data = await res.json();
+      if (useCache) {
+        const ttlMs = cache.getTTL(endpoint, config);
+        cache.set(key, data || {}, ttlMs);
+      }
       resolve(data || {});
     } catch (error) {
       const processedError = await processError(error);

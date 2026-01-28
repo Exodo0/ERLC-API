@@ -1,6 +1,6 @@
 {
   "name": "erlc-api",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "An ER:LC API wrapper for JS/TS",
   "main": "index.js",
   "types": "src/types/index.d.ts",
@@ -14,6 +14,7 @@
   "author": "egologics",
   "license": "MIT",
   "devDependencies": {
+    "jest": "^29.7.0",
     "typescript": "^5.3.2"
   },
   "dependencies": {
@@ -23,7 +24,8 @@
     "ora": "^8.2.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "gui:dev": "cd examples/electron-app && npm install && npm start"
   },
   "repository": {
     "type": "git",

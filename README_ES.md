@@ -6,7 +6,7 @@
 
 [🇬🇧 English Version](README.md)
 
-Una librería ligera, completa y **totalmente tipada** para interactuar con la API de *Emergency Response: Liberty County* (ER:LC). Diseñada para ofrecer la mejor experiencia de desarrollo tanto en JavaScript como en TypeScript.
+Una librería ligera, completa y **totalmente tipada** para interactuar con la API de _Emergency Response: Liberty County_ (ER:LC). Diseñada para ofrecer la mejor experiencia de desarrollo tanto en JavaScript como en TypeScript.
 
 ---
 
@@ -33,6 +33,7 @@ bun add erlc-api
 Puedes usar la librería con o sin un `Global Token` (requerido solo para aplicaciones a gran escala).
 
 **JavaScript**
+
 ```javascript
 const erlc = require("erlc-api");
 
@@ -44,6 +45,7 @@ const client = new erlc.Client();
 ```
 
 **TypeScript**
+
 ```typescript
 import { Client, getServer } from "erlc-api";
 
@@ -63,7 +65,9 @@ const serverToken = "tu-server-key-aqui";
 
 // Obtener estado del servidor
 const server = await erlc.getServer(serverToken);
-console.log(`Servidor: ${server.Name} | Jugadores: ${server.CurrentPlayers}/${server.MaxPlayers}`);
+console.log(
+  `Servidor: ${server.Name} | Jugadores: ${server.CurrentPlayers}/${server.MaxPlayers}`,
+);
 
 // Obtener jugadores conectados
 const players = await erlc.getPlayers(serverToken);
@@ -99,7 +103,41 @@ const bans = await erlc.getBans(serverToken);
 
 // Obtener Staff del servidor
 const staff = await erlc.getStaff(serverToken);
+```
 
+---
+
+## 🖥️ Cliente Visual (GUI para Desarrolladores)
+
+Incluimos una herramienta gráfica construida con Electron para que puedas probar todos los endpoints de la API sin escribir código. Ideal para verificar tus keys y explorar la data.
+
+![Electron App Preview](https://via.placeholder.com/800x450.png?text=ERLC+API+Client+Preview)
+
+### ¿Cómo usarla?
+
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/Exodo0/ERLC-API.git
+cd ERLC-API
+```
+
+2. Ejecuta el cliente visual:
+
+```bash
+npm run gui:dev
+```
+
+La aplicación te permitirá:
+
+- Guardar tus credenciales (Server Token / Global Token).
+- Probar **todos** los endpoints con un solo clic.
+- Ver las respuestas JSON formateadas y coloreadas.
+- Ejecutar comandos remotos en tu servidor.
+
+### 📢 Otros Comandos
+
+```javascript
 // Ejecutar comando remoto (Ej: Anuncio)
 await erlc.runCommand(serverToken, ":h ¡Hola desde la API!");
 
@@ -118,20 +156,22 @@ try {
   await erlc.getServer(serverToken);
 } catch (error) {
   console.error(`Error ${error.code}: ${error.message}`);
-  
-  if (error.code === 4001) console.log("⏳ Rate limit alcanzado, espera un momento.");
-  if (error.code === 2002) console.log("🔑 La Server Key es inválida o expiró.");
+
+  if (error.code === 4001)
+    console.log("⏳ Rate limit alcanzado, espera un momento.");
+  if (error.code === 2002)
+    console.log("🔑 La Server Key es inválida o expiró.");
 }
 ```
 
 ### Códigos Comunes
 
-| Código | Significado | Solución |
-|:---:|---|---|
-| **2002** | Key Inválida | Verifica tu `Server-Key` en el juego. |
+|  Código  | Significado      | Solución                                       |
+| :------: | ---------------- | ---------------------------------------------- |
+| **2002** | Key Inválida     | Verifica tu `Server-Key` en el juego.          |
 | **3002** | Servidor Offline | El servidor no tiene jugadores o está apagado. |
-| **4001** | Rate Limit | Estás enviando muchas peticiones muy rápido. |
-| **403** | No Autorizado | Verifica tus permisos o tokens. |
+| **4001** | Rate Limit       | Estás enviando muchas peticiones muy rápido.   |
+| **403**  | No Autorizado    | Verifica tus permisos o tokens.                |
 
 ---
 

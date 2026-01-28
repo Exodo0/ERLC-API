@@ -21,7 +21,8 @@ module.exports = () => {
         return reject(error);
       }
 
-      const res = await fetch.default(`${BASEURL}/api-key/reset`, {
+      const f = config?.fetch || fetch.default;
+      const res = await f(`${BASEURL}/api-key/reset`, {
         method: "POST",
         headers: {
           Authorization: config.globalToken,
