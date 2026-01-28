@@ -1,5 +1,6 @@
 const { BASEURL, Vanity } = require("../../constants.js");
 const { processError } = require("../../utils/errorHandler.js");
+const cache = require("../../utils/cache.js");
 
 module.exports = (serverToken) => {
   return new Promise(async (resolve, reject) => {
@@ -19,7 +20,19 @@ module.exports = (serverToken) => {
         headers["Authorization"] = config.globalToken;
       }
 
-      const res = await fetch.default(`${BASEURL}/server`, {
+      const endpoint = "server";
+      const f = config?.fetch || fetch.default;
+      const useCache = !!config?.cache?.enabled;
+      const key = cache.makeKey(endpoint, serverToken);
+      if (useCache) {
+        const cached = cache.get(key);
+        if (cached) {
+          // Return cached enhanced data directly
+          return resolve(cached);
+        }
+      }
+
+      const res = await f(`${BASEURL}/server`, {
         headers: headers,
         timeout: 10000, // 10 second timeout
       });
@@ -37,7 +50,7 @@ module.exports = (serverToken) => {
       const getUsername = async (userId) => {
         try {
           const response = await fetch.default(
-            `https://users.roblox.com/v1/users/${userId}`
+            `https://users.roblox.com/v1/users/${userId}`,
           );
           const userData = await response.json();
           if (!response.ok) {
@@ -48,7 +61,7 @@ module.exports = (serverToken) => {
         } catch (error) {
           console.warn(
             `Warning: Error fetching username for ID: ${userId}`,
-            error
+            error,
           );
           return `User:${userId}`; // Fallback format
         }
@@ -79,17 +92,25 @@ module.exports = (serverToken) => {
         delete enhancedData.OwnerId;
         delete enhancedData.CoOwnerIds;
 
+        if (useCache) {
+          const ttlMs = cache.getTTL(endpoint, config);
+          cache.set(key, enhancedData, ttlMs);
+        }
         resolve(enhancedData);
       } catch (error) {
         // If username fetching fails, still return the original data with IDs
         console.warn(
           "Warning: Could not fetch usernames, returning data with IDs:",
-          error
+          error,
         );
         const fallbackData = {
           ...data,
           VanityURL: `${Vanity}${data.JoinKey}`,
         };
+        if (useCache) {
+          const ttlMs = cache.getTTL(endpoint, config);
+          cache.set(key, fallbackData, ttlMs);
+        }
         resolve(fallbackData);
       }
     } catch (error) {

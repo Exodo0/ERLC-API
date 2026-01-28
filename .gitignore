@@ -4,3 +4,6 @@ bun.lock
 node_modules
 
 test-project
+
+examples/interactive-panel.js
+test-ts.js

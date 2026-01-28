@@ -36,7 +36,8 @@ module.exports = (serverToken, command) => {
         headers["Authorization"] = config.globalToken;
       }
 
-      const res = await fetch.default(`${BASEURL}/server/command`, {
+      const f = config?.fetch || fetch.default;
+      const res = await f(`${BASEURL}/server/command`, {
         method: "POST",
         headers: headers,
         body: requestBody,

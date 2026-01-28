@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ER:LC API Client</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- FontAwesome for icons (CDN for demo, usually local) or simple SVG -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Custom Title Bar -->
+    <div id="titlebar">
+      <div class="window-title">ER:LC API Client</div>
+      <div class="window-controls">
+        <div id="btn-theme" class="control-btn" title="Toggle Theme">
+          <i class="fas fa-moon"></i>
+        </div>
+        <div id="btn-min" class="control-btn"><i class="fas fa-minus"></i></div>
+        <div id="btn-max" class="control-btn">
+          <i class="far fa-square"></i>
+        </div>
+        <div id="btn-close" class="control-btn close-btn">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+      <!-- Header Section -->
+      <div class="card">
+        <h3>
+          <span><i class="fas fa-key"></i> API Credentials</span>
+          <button id="btn-save-creds" class="secondary">Save & Test</button>
+        </h3>
+        <div class="row">
+          <div class="col">
+            <label>Global Token (Optional)</label>
+            <input
+              type="text"
+              id="global-token"
+              placeholder="Enter Global Token..."
+            />
+          </div>
+          <div class="col">
+            <label>Server Token</label>
+            <input
+              type="text"
+              id="server-token"
+              placeholder="Enter Server Key..."
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="card">
+        <h3><i class="fas fa-th"></i> Features</h3>
+        <div class="grid-container">
+          <button id="btn-get-server" class="feature-btn">
+            <i class="fas fa-server"></i> Server Info
+          </button>
+          <button id="btn-get-players" class="feature-btn">
+            <i class="fas fa-users"></i> Players
+          </button>
+          <button id="btn-get-staff" class="feature-btn">
+            <i class="fas fa-user-shield"></i> Staff
+          </button>
+          <button id="btn-get-queue" class="feature-btn">
+            <i class="fas fa-list-ol"></i> Queue
+          </button>
+          <button id="btn-get-vehicles" class="feature-btn">
+            <i class="fas fa-car"></i> Vehicles
+          </button>
+          <button id="btn-get-bans" class="feature-btn">
+            <i class="fas fa-ban"></i> Bans
+          </button>
+          <button id="btn-get-kill-logs" class="feature-btn">
+            <i class="fas fa-skull"></i> Kill Logs
+          </button>
+          <button id="btn-get-join-logs" class="feature-btn">
+            <i class="fas fa-sign-in-alt"></i> Join Logs
+          </button>
+          <button id="btn-get-cmd-logs" class="feature-btn">
+            <i class="fas fa-terminal"></i> Cmd Logs
+          </button>
+          <button id="btn-get-mod-logs" class="feature-btn">
+            <i class="fas fa-gavel"></i> Mod Logs
+          </button>
+        </div>
+      </div>
+
+      <!-- Command Console -->
+      <div class="card">
+        <h3><i class="fas fa-terminal"></i> Command Console</h3>
+        <div class="form-group" style="display: flex; gap: 10px">
+          <input type="text" id="cmd-input" placeholder=":h Hello World" />
+          <button id="btn-run-cmd">Send</button>
+        </div>
+      </div>
+
+      <!-- Output Log -->
+      <div class="card">
+        <h3>
+          <span><i class="fas fa-code"></i> Output Log</span>
+          <button
+            id="btn-clear"
+            class="secondary"
+            style="font-size: 11px; padding: 5px 10px"
+          >
+            Clear
+          </button>
+        </h3>
+        <div id="output-log" class="log-container">
+          <div
+            class="log-placeholder"
+            style="padding: 15px; color: var(--text-secondary)"
+          >
+            Waiting for action...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

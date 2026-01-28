@@ -3,7 +3,13 @@ const assert = require("../functions/assert.js");
 
 /**
  * @typedef {Object} ClientConfig
- * @property {string} globalToken - Your ER:LC global API token
+ * @property {string} [globalToken] - Your ER:LC global API token
+ * @property {Object} [cache] - Cache configuration
+ * @property {boolean} [cache.enabled] - Enable in-memory cache
+ * @property {Object.<string, number>} [cache.ttlMs] - Per-endpoint TTL in ms
+ * @property {boolean} [cache.staleWhileRevalidate] - Placeholder for future strategy
+ * @property {Object} [logger] - Logger instance (console-compatible)
+ * @property {Function} [fetch] - Custom fetch implementation
  */
 
 /**
@@ -31,7 +37,12 @@ class Client {
    * @returns {ClientConfig} The client configuration.
    */
   config() {
-    erlc.config = this.options;
+    // Mutate existing config object to preserve references
+    erlc.config.globalToken = this.options.globalToken;
+    erlc.config.serverToken = this.options.serverToken;
+    erlc.config.cache = this.options.cache;
+    erlc.config.logger = this.options.logger;
+    erlc.config.fetch = this.options.fetch;
     return erlc.config;
   }
 }

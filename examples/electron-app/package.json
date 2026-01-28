@@ -1,0 +1,15 @@
+{
+  "name": "erlc-api-electron-app",
+  "private": true,
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^40.0.0"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  }
+}
