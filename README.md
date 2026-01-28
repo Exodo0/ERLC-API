@@ -4,40 +4,42 @@
 [![License](https://img.shields.io/npm/l/erlc-api?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/npm/dt/erlc-api?style=flat-square)](https://www.npmjs.com/package/erlc-api)
 
-Una librería ligera, completa y **totalmente tipada** para interactuar con la API de *Emergency Response: Liberty County* (ER:LC). Diseñada para ofrecer la mejor experiencia de desarrollo tanto en JavaScript como en TypeScript.
+[🇪🇸 Versión en Español](README_ES.md)
+
+A lightweight, complete, and **fully typed** library for interacting with the *Emergency Response: Liberty County* (ER:LC) API. Designed to provide the best development experience in both JavaScript and TypeScript.
 
 ---
 
-## ✨ Características
+## ✨ Features
 
-- 🎯 **Cobertura Total**: Soporte para el 100% de los endpoints de la API v1.
-- 🛡️ **Tipado TypeScript**: Definiciones de tipos incluidas nativamente.
-- ⚡ **Ligero y Rápido**: Sin dependencias pesadas innecesarias.
-- 🔒 **Seguro**: Validación de tokens y manejo de errores robusto.
-- 🆕 **Actualizado**: Soporte para `GlobalToken` opcional (v3.2.0+).
+- 🎯 **Full Coverage**: Support for 100% of the API v1 endpoints.
+- 🛡️ **TypeScript Support**: Native type definitions included.
+- ⚡ **Lightweight & Fast**: No unnecessary heavy dependencies.
+- 🔒 **Secure**: Robust token validation and error handling.
+- 🆕 **Up-to-date**: Support for optional `GlobalToken` (v3.2.0+).
 
-## 📦 Instalación
+## 📦 Installation
 
 ```bash
 npm install erlc-api
-# o
+# or
 bun add erlc-api
 ```
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
-### Inicialización
+### Initialization
 
-Puedes usar la librería con o sin un `Global Token` (requerido solo para aplicaciones a gran escala).
+You can use the library with or without a `Global Token` (required only for large-scale applications).
 
 **JavaScript**
 ```javascript
 const erlc = require("erlc-api");
 
-// Inicialización simple (Recomendada para la mayoría)
+// Simple initialization (Recommended for most users)
 const client = new erlc.Client();
 
-// O con Global Token (Para Large Apps)
+// Or with Global Token (For Large Apps)
 // const client = new erlc.Client({ globalToken: "..." });
 ```
 
@@ -50,97 +52,94 @@ const client = new Client();
 
 ---
 
-## 📖 Ejemplos de Uso
+## 📖 Usage Examples
 
-Asegúrate de tener tu `Server Key` a mano (obtenla en los ajustes de tu servidor privado en ER:LC).
+Make sure to have your `Server Key` ready (get it from your private server settings in ER:LC).
 
-### 🖥️ Información del Servidor
+### 🖥️ Server Information
 
 ```javascript
-const serverToken = "tu-server-key-aqui";
+const serverToken = "your-server-key-here";
 
-// Obtener estado del servidor
+// Get server status
 const server = await erlc.getServer(serverToken);
-console.log(`Servidor: ${server.Name} | Jugadores: ${server.CurrentPlayers}/${server.MaxPlayers}`);
+console.log(`Server: ${server.Name} | Players: ${server.CurrentPlayers}/${server.MaxPlayers}`);
 
-// Obtener jugadores conectados
+// Get connected players
 const players = await erlc.getPlayers(serverToken);
-console.table(players); // Muestra nombre, ID, permisos y equipo
+console.table(players); // Shows name, ID, permission, and team
 
-// Obtener vehículos en el mapa
+// Get vehicles on the map
 const vehicles = await erlc.getVehicles(serverToken);
 ```
 
-### 📜 Registros (Logs)
+### 📜 Logs
 
-Accede a los historiales de actividad de tu servidor:
+Access your server's activity history:
 
 ```javascript
-// Logs de Entradas/Salidas
+// Join/Leave Logs
 const joinLogs = await erlc.getJoinLogs(serverToken);
 
-// Logs de Muertes (Killfeed)
+// Kill Logs (Killfeed)
 const killLogs = await erlc.getKillLogs(serverToken);
 
-// Logs de Comandos ejecutados
+// Command Logs
 const commandLogs = await erlc.getCommandLogs(serverToken);
 
-// Logs de Llamadas a Moderadores
+// Mod Call Logs
 const modCalls = await erlc.getModcallLogs(serverToken);
 ```
 
-### 🛠️ Gestión y Administración
+### 🛠️ Management & Administration
 
 ```javascript
-// Ver lista de Baneos
+// Get Ban List
 const bans = await erlc.getBans(serverToken);
 
-// Obtener Staff del servidor
+// Get Server Staff
 const staff = await erlc.getStaff(serverToken);
 
-// Ejecutar comando remoto (Ej: Anuncio)
-await erlc.runCommand(serverToken, ":h ¡Hola desde la API!");
+// Get Queue
+const queue = await erlc.getQueue(serverToken);
+```
 
-// Resetear Global Key (Solo si tienes una configurada)
-// await erlc.resetGlobalKey();
+### ⚡ Run Command
+
+Execute commands directly from your code:
+
+```javascript
+const command = await erlc.runCommand(serverToken, ":announce This is an API test!");
+console.log(command); // Returns true if successful
 ```
 
 ---
 
-## 🚨 Manejo de Errores
+## ⚠️ Error Handling
 
-La librería lanza errores descriptivos (`ErlcError`) que facilitan la depuración.
+The library throws descriptive errors. You should wrap your calls in `try/catch` blocks.
 
 ```javascript
 try {
-  await erlc.getServer(serverToken);
+  const data = await erlc.getServer("invalid-token");
 } catch (error) {
-  console.error(`Error ${error.code}: ${error.message}`);
-  
-  if (error.code === 4001) console.log("⏳ Rate limit alcanzado, espera un momento.");
-  if (error.code === 2002) console.log("🔑 La Server Key es inválida o expiró.");
+  console.error(error.message); // e.g., "Forbidden: Access denied..."
 }
 ```
 
-### Códigos Comunes
-
-| Código | Significado | Solución |
-|:---:|---|---|
-| **2002** | Key Inválida | Verifica tu `Server-Key` en el juego. |
-| **3002** | Servidor Offline | El servidor no tiene jugadores o está apagado. |
-| **4001** | Rate Limit | Estás enviando muchas peticiones muy rápido. |
-| **403** | No Autorizado | Verifica tus permisos o tokens. |
+| Error Code | Description |
+|------------|-------------|
+| `401` | Unauthorized (Invalid Token) |
+| `403` | Forbidden (Permissions issue) |
+| `429` | Rate Limit Exceeded |
+| `500` | Internal Server Error |
 
 ---
 
-## 🔗 Enlaces Útiles
+## 🤝 Contributing
 
-- [Documentación Oficial de PRC](https://apidocs.policeroleplay.community/)
-- [Discord de Soporte PRC](https://discord.gg/prc)
-- [NPM Package](https://www.npmjs.com/package/erlc-api)
+Contributions are welcome! Feel free to submit a Pull Request.
 
----
+## 📄 License
 
-<div align="center">
-  <sub>Hecho con ❤️ para la comunidad de ER:LC</sub>
-</div>
+This project is licensed under the [MIT License](LICENSE).
