@@ -17,12 +17,12 @@ class Client {
    * @constructor
    * @param {ClientConfig} options - Client Options
    */
-  constructor(options) {
-    assert(
-      typeof options === "object",
-      `Syntax error: object expected for "options", received ${typeof options}`,
-    );
-    this.options = { ...options };
+  constructor(options = {}) {
+    if (options && typeof options === "object") {
+      this.options = { ...options };
+    } else {
+      this.options = {};
+    }
     this.config();
   }
 

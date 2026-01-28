@@ -15,8 +15,8 @@ module.exports = () => {
       if (!config?.globalToken) {
         const error = await processError(
           new Error(
-            "Global token not configured. Please initialize the client first.",
-          ),
+            "Global token not configured. Please initialize the client first."
+          )
         );
         return reject(error);
       }
@@ -44,13 +44,13 @@ module.exports = () => {
       // However, looking at other endpoints, they return data directly.
       // Let's assume it returns a JSON with the key, or we can inspect the response content type.
       // But for now, let's try to parse as JSON.
-
+      
       const data = await res.json();
       // If data has a specific field for the key, we should return that.
       // If the documentation doesn't specify, I'll return the whole data object or try to find the key.
       // Based on "This will send a new key", it might be { "apiKey": "..." } or just the string if it's text/plain.
       // Given other endpoints return JSON, this likely returns JSON.
-
+      
       resolve(data);
     } catch (error) {
       const processedError = await processError(error);
