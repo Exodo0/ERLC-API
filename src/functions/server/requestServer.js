@@ -8,6 +8,12 @@ function assertServerToken(serverToken) {
   }
 }
 
+function resolveServerToken(serverToken, config) {
+  const resolvedToken = serverToken || config?.serverToken;
+  assertServerToken(resolvedToken);
+  return resolvedToken;
+}
+
 function buildHeaders(serverToken, config, extraHeaders = {}) {
   const headers = {
     "Server-Key": serverToken,
@@ -72,21 +78,21 @@ async function requestJson(url, options) {
 }
 
 async function requestServer(serverToken, options = {}) {
-  assertServerToken(serverToken);
-
   const {
     endpoint = "server",
     includes = [],
     defaultValue = {},
     transform = (data) => data,
+    useCache = true,
   } = options;
 
   const { fetch, config } = await getFetch();
-  const useCache = !!config?.cache?.enabled;
+  const resolvedToken = resolveServerToken(serverToken, config);
+  const shouldCache = useCache && !!config?.cache?.enabled;
   const cacheExtras = includes.length ? includes.join(",") : "";
-  const key = cache.makeKey(endpoint, serverToken, cacheExtras);
+  const key = cache.makeKey(endpoint, resolvedToken, cacheExtras);
 
-  if (useCache) {
+  if (shouldCache) {
     const cached = cache.get(key);
     if (cached) {
       return cached;
@@ -96,14 +102,14 @@ async function requestServer(serverToken, options = {}) {
   const data = await requestJson(buildServerUrl(includes), {
     fetch,
     init: {
-      headers: buildHeaders(serverToken, config),
+      headers: buildHeaders(resolvedToken, config),
       timeout: 10000,
     },
   });
 
   const value = (await transform(data)) ?? defaultValue;
 
-  if (useCache) {
+  if (shouldCache) {
     const ttlMs = cache.getTTL(endpoint, config);
     cache.set(key, value, ttlMs);
   }
@@ -112,8 +118,6 @@ async function requestServer(serverToken, options = {}) {
 }
 
 async function requestApi(serverToken, path, options = {}) {
-  assertServerToken(serverToken);
-
   const {
     baseUrl = BASEURL,
     method = "GET",
@@ -126,8 +130,9 @@ async function requestApi(serverToken, path, options = {}) {
   } = options;
 
   const { fetch, config } = await getFetch();
+  const resolvedToken = resolveServerToken(serverToken, config);
   const shouldCache = method === "GET" && useCache && !!config?.cache?.enabled;
-  const key = cache.makeKey(endpoint, serverToken);
+  const key = cache.makeKey(endpoint, resolvedToken);
 
   if (shouldCache) {
     const cached = cache.get(key);
@@ -137,7 +142,7 @@ async function requestApi(serverToken, path, options = {}) {
   }
 
   const headers = buildHeaders(
-    serverToken,
+    resolvedToken,
     config,
     body ? { "Content-Type": "application/json" } : {},
   );
@@ -171,6 +176,7 @@ async function requestLegacyServer(serverToken, path, options = {}) {
 
 module.exports = {
   assertServerToken,
+  resolveServerToken,
   buildHeaders,
   getFetch,
   requestServer,

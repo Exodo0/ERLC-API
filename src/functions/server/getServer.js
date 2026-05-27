@@ -37,6 +37,11 @@ function normalizeIncludes(options = {}) {
 }
 
 module.exports = (serverToken, options = {}) => {
+  if (serverToken && typeof serverToken === "object") {
+    options = serverToken;
+    serverToken = undefined;
+  }
+
   const includes = normalizeIncludes(options);
 
   return requestServer(serverToken, {

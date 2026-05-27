@@ -1,4 +1,4 @@
-const { assertServerToken, requestApi } = require("./requestServer.js");
+const { requestApi } = require("./requestServer.js");
 
 /**
  * Executes a command on the server.
@@ -7,7 +7,10 @@ const { assertServerToken, requestApi } = require("./requestServer.js");
  * @returns {Promise<boolean>} Promise that resolves to true if command was executed successfully
  */
 module.exports = async (serverToken, command) => {
-  assertServerToken(serverToken);
+  if (command === undefined) {
+    command = serverToken;
+    serverToken = undefined;
+  }
 
   if (!command || typeof command !== "string") {
     throw new Error("Command is required and must be a string");
