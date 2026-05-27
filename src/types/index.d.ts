@@ -32,6 +32,8 @@ export interface ErrorInfo {
 
 export interface ClientConfig {
   globalToken?: string; // The ER:LC global API token
+  serverToken?: string; // The ER:LC private server API token
+  validateServerToken?: boolean; // Validate serverToken with /server on init
   cache?: {
     enabled?: boolean;
     ttlMs?: Record<string, number>;
@@ -166,30 +168,49 @@ export interface VSMCommandBody {
   command: string; // ":h Hey everyone!"
 }
 
-export function getBans(serverToken: string): Promise<ServerBan>;
-export function getCommandLogs(serverToken: string): Promise<CommandLog[]>;
-export function getJoinLogs(serverToken: string): Promise<JoinLog[]>;
-export function getKillLogs(serverToken: string): Promise<KillLog[]>;
-export function getModcallLogs(serverToken: string): Promise<ModcallLog[]>;
-export function getEmergencyCalls(serverToken: string): Promise<EmergencyCall[]>;
-export function getPlayers(serverToken: string): Promise<ServerPlayer[]>;
-export function getQueue(serverToken: string): Promise<number[]>;
+export function getBans(serverToken?: string): Promise<ServerBan>;
+export function getCommandLogs(serverToken?: string): Promise<CommandLog[]>;
+export function getJoinLogs(serverToken?: string): Promise<JoinLog[]>;
+export function getKillLogs(serverToken?: string): Promise<KillLog[]>;
+export function getModcallLogs(serverToken?: string): Promise<ModcallLog[]>;
+export function getEmergencyCalls(serverToken?: string): Promise<EmergencyCall[]>;
+export function getPlayers(serverToken?: string): Promise<ServerPlayer[]>;
+export function getQueue(serverToken?: string): Promise<number[]>;
 export function getServer(
-  serverToken: string,
+  serverToken?: string,
   options?: ServerIncludeOptions,
 ): Promise<ServerStatus>;
-export function getStaff(serverToken: string): Promise<ServerStaff>;
-export function getVehicles(serverToken: string): Promise<VehiclesLog[]>;
+export function getServer(options?: ServerIncludeOptions): Promise<ServerStatus>;
+export function getStaff(serverToken?: string): Promise<ServerStaff>;
+export function getVehicles(serverToken?: string): Promise<VehiclesLog[]>;
 export function runCommand(
   serverToken: string,
   command: string,
 ): Promise<boolean>;
+export function runCommand(command: string): Promise<boolean>;
 
 export function resetGlobalKey(): Promise<any>;
 
 export class Client {
+  connected: boolean;
+  connectionError: Error | null;
+  ready: Promise<Client>;
+
   constructor(options?: ClientConfig);
   config(): ClientConfig;
+  connect(options?: { throwOnError?: boolean }): Promise<Client>;
+  getServer(options?: ServerIncludeOptions): Promise<ServerStatus>;
+  getPlayers(): Promise<ServerPlayer[]>;
+  getVehicles(): Promise<VehiclesLog[]>;
+  getEmergencyCalls(): Promise<EmergencyCall[]>;
+  getJoinLogs(): Promise<JoinLog[]>;
+  getKillLogs(): Promise<KillLog[]>;
+  getCommandLogs(): Promise<CommandLog[]>;
+  getModcallLogs(): Promise<ModcallLog[]>;
+  getBans(): Promise<ServerBan>;
+  getStaff(): Promise<ServerStaff>;
+  getQueue(): Promise<number[]>;
+  runCommand(command: string): Promise<boolean>;
 }
 
 export const utils: {

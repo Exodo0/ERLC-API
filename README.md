@@ -30,53 +30,60 @@ bun add erlc-api
 
 ### Initialization
 
-You can use the library with or without a `Global Token` (required only for large-scale applications).
+You can initialize the client with your `Server Key` so every server request can reuse it automatically. A `Global Token` is optional and only required for large-scale applications.
 
 **JavaScript**
 ```javascript
 const erlc = require("erlc-api");
 
-// Simple initialization (Recommended for most users)
-const client = new erlc.Client();
+const client = new erlc.Client({
+  serverToken: "your-server-key-here",
+  // globalToken: "your-global-token-here", // Optional, for large apps
+});
 
-// Or with Global Token (For Large Apps)
-// const client = new erlc.Client({ globalToken: "..." });
+await client.ready;
+
+if (!client.connected) {
+  console.error("Could not connect:", client.connectionError.message);
+}
 ```
 
 **TypeScript**
 ```typescript
-import { Client, getServer } from "erlc-api";
+import { Client } from "erlc-api";
 
-const client = new Client();
+const client = new Client({
+  serverToken: "your-server-key-here",
+});
+
+await client.ready;
 ```
 
 ---
 
 ## 📖 Usage Examples
 
-Make sure to have your `Server Key` ready (get it from your private server settings in ER:LC).
+Make sure to have your `Server Key` ready (get it from your private server settings in ER:LC). When the key is configured in `Client`, you do not need to pass it again on every request.
 
 ### 🖥️ Server Information
 
 ```javascript
-const serverToken = "your-server-key-here";
-
 // Get server status
-const server = await erlc.getServer(serverToken);
+const server = await client.getServer();
 console.log(`Server: ${server.Name} | Players: ${server.CurrentPlayers}/${server.MaxPlayers}`);
 
 // Get connected players
-const players = await erlc.getPlayers(serverToken);
+const players = await client.getPlayers();
 console.table(players); // Shows name, ID, permission, and team
 
 // Get vehicles on the map
-const vehicles = await erlc.getVehicles(serverToken);
+const vehicles = await client.getVehicles();
 
 // Get emergency calls
-const emergencyCalls = await erlc.getEmergencyCalls(serverToken);
+const emergencyCalls = await client.getEmergencyCalls();
 
 // Fetch server info with v2 include flags in one request
-const fullServer = await erlc.getServer(serverToken, {
+const fullServer = await client.getServer({
   players: true,
   staff: true,
   emergencyCalls: true,
@@ -89,29 +96,29 @@ Access your server's activity history:
 
 ```javascript
 // Join/Leave Logs
-const joinLogs = await erlc.getJoinLogs(serverToken);
+const joinLogs = await client.getJoinLogs();
 
 // Kill Logs (Killfeed)
-const killLogs = await erlc.getKillLogs(serverToken);
+const killLogs = await client.getKillLogs();
 
 // Command Logs
-const commandLogs = await erlc.getCommandLogs(serverToken);
+const commandLogs = await client.getCommandLogs();
 
 // Mod Call Logs
-const modCalls = await erlc.getModcallLogs(serverToken);
+const modCalls = await client.getModcallLogs();
 ```
 
 ### 🛠️ Management & Administration
 
 ```javascript
 // Get Ban List
-const bans = await erlc.getBans(serverToken);
+const bans = await client.getBans();
 
 // Get Server Staff
-const staff = await erlc.getStaff(serverToken);
+const staff = await client.getStaff();
 
 // Get Queue
-const queue = await erlc.getQueue(serverToken);
+const queue = await client.getQueue();
 ```
 
 ### ⚡ Run Command
@@ -119,8 +126,17 @@ const queue = await erlc.getQueue(serverToken);
 Execute commands directly from your code:
 
 ```javascript
-const command = await erlc.runCommand(serverToken, ":announce This is an API test!");
+const command = await client.runCommand(":announce This is an API test!");
 console.log(command); // Returns true if successful
+```
+
+### Manual Token Usage
+
+You can still pass the server token directly if you prefer the older style:
+
+```javascript
+const server = await erlc.getServer("your-server-key-here");
+const players = await erlc.getPlayers("your-server-key-here");
 ```
 
 ---
@@ -131,7 +147,8 @@ The library throws descriptive errors. You should wrap your calls in `try/catch`
 
 ```javascript
 try {
-  const data = await erlc.getServer("invalid-token");
+  const client = new erlc.Client({ serverToken: "invalid-token" });
+  await client.connect();
 } catch (error) {
   console.error(error.message); // e.g., "Forbidden: Access denied..."
 }

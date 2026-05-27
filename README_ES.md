@@ -30,57 +30,64 @@ bun add erlc-api
 
 ### Inicialización
 
-Puedes usar la librería con o sin un `Global Token` (requerido solo para aplicaciones a gran escala).
+Puedes iniciar el cliente con tu `Server Key` para reutilizarla automáticamente en todas las peticiones del servidor. El `Global Token` es opcional y solo se requiere para aplicaciones a gran escala.
 
 **JavaScript**
 
 ```javascript
 const erlc = require("erlc-api");
 
-// Inicialización simple (Recomendada para la mayoría)
-const client = new erlc.Client();
+const client = new erlc.Client({
+  serverToken: "tu-server-key-aqui",
+  // globalToken: "tu-global-token-aqui", // Opcional, para apps grandes
+});
 
-// O con Global Token (Para Large Apps)
-// const client = new erlc.Client({ globalToken: "..." });
+await client.ready;
+
+if (!client.connected) {
+  console.error("No se pudo conectar:", client.connectionError.message);
+}
 ```
 
 **TypeScript**
 
 ```typescript
-import { Client, getServer } from "erlc-api";
+import { Client } from "erlc-api";
 
-const client = new Client();
+const client = new Client({
+  serverToken: "tu-server-key-aqui",
+});
+
+await client.ready;
 ```
 
 ---
 
 ## 📖 Ejemplos de Uso
 
-Asegúrate de tener tu `Server Key` a mano (obtenla en los ajustes de tu servidor privado en ER:LC).
+Asegúrate de tener tu `Server Key` a mano (obtenla en los ajustes de tu servidor privado en ER:LC). Cuando la key está configurada en `Client`, no necesitas volver a pasarla en cada petición.
 
 ### 🖥️ Información del Servidor
 
 ```javascript
-const serverToken = "tu-server-key-aqui";
-
 // Obtener estado del servidor
-const server = await erlc.getServer(serverToken);
+const server = await client.getServer();
 console.log(
   `Servidor: ${server.Name} | Jugadores: ${server.CurrentPlayers}/${server.MaxPlayers}`,
 );
 
 // Obtener jugadores conectados
-const players = await erlc.getPlayers(serverToken);
+const players = await client.getPlayers();
 console.table(players); // Muestra nombre, ID, permisos y equipo
 
 // Obtener vehículos en el mapa
-const vehicles = await erlc.getVehicles(serverToken);
+const vehicles = await client.getVehicles();
 
 // Obtener llamadas de emergencia
-const emergencyCalls = await erlc.getEmergencyCalls(serverToken);
+const emergencyCalls = await client.getEmergencyCalls();
 
 // Obtener información del servidor con includes de v2 en una sola petición
-const fullServer = await erlc.getServer(serverToken, {
+const fullServer = await client.getServer({
   players: true,
   staff: true,
   emergencyCalls: true,
@@ -93,36 +100,48 @@ Accede a los historiales de actividad de tu servidor:
 
 ```javascript
 // Logs de Entradas/Salidas
-const joinLogs = await erlc.getJoinLogs(serverToken);
+const joinLogs = await client.getJoinLogs();
 
 // Logs de Muertes (Killfeed)
-const killLogs = await erlc.getKillLogs(serverToken);
+const killLogs = await client.getKillLogs();
 
 // Logs de Comandos ejecutados
-const commandLogs = await erlc.getCommandLogs(serverToken);
+const commandLogs = await client.getCommandLogs();
 
 // Logs de Llamadas a Moderadores
-const modCalls = await erlc.getModcallLogs(serverToken);
+const modCalls = await client.getModcallLogs();
 ```
 
 ### 🛠️ Gestión y Administración
 
 ```javascript
 // Ver lista de Baneos
-const bans = await erlc.getBans(serverToken);
+const bans = await client.getBans();
 
 // Obtener Staff del servidor
-const staff = await erlc.getStaff(serverToken);
+const staff = await client.getStaff();
+
+// Obtener cola del servidor
+const queue = await client.getQueue();
 ```
 
 ### 📢 Otros Comandos
 
 ```javascript
 // Ejecutar comando remoto (Ej: Anuncio)
-await erlc.runCommand(serverToken, ":h ¡Hola desde la API!");
+await client.runCommand(":h ¡Hola desde la API!");
 
 // Resetear Global Key (Solo si tienes una configurada)
 // await erlc.resetGlobalKey();
+```
+
+### Uso con Token Manual
+
+También puedes seguir pasando la server key directamente si prefieres el estilo anterior:
+
+```javascript
+const server = await erlc.getServer("tu-server-key-aqui");
+const players = await erlc.getPlayers("tu-server-key-aqui");
 ```
 
 ---
@@ -133,7 +152,8 @@ La librería lanza errores descriptivos (`ErlcError`) que facilitan la depuraci�
 
 ```javascript
 try {
-  await erlc.getServer(serverToken);
+  const client = new erlc.Client({ serverToken: "token-invalido" });
+  await client.connect();
 } catch (error) {
   console.error(`Error ${error.code}: ${error.message}`);
 
