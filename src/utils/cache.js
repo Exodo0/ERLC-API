@@ -6,8 +6,10 @@ const DEFAULT_TTLS = {
   killlogs: 3000,
   commandlogs: 3000,
   modcalls: 3000,
+  emergencycalls: 3000,
   staff: 10000,
   queue: 2000,
+  bans: 10000,
 };
 
 const store = new Map();
@@ -59,4 +61,3 @@ module.exports = {
   invalidate,
   invalidateByPrefix,
 };
-

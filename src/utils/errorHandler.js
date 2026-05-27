@@ -19,12 +19,24 @@ function handleApiError(response, errorData) {
     const errorInfo = getErrorInfo(errorData.code);
     const suggestions = getSuggestedActions(errorData.code);
 
-    const message = `${errorInfo.message}: ${errorInfo.description}`;
+    const apiMessage = errorData.message || errorData.error;
+    const message = apiMessage
+      ? `${errorInfo.message}: ${apiMessage}`
+      : `${errorInfo.message}: ${errorInfo.description}`;
     const error = new ErlcError(message, errorData.code, status);
     error.category = errorInfo.category;
     error.severity = errorInfo.severity;
     error.suggestions = suggestions;
     error.retryable = isRetryableError(errorData.code);
+    if (typeof errorData.retry_after === "number") {
+      error.retryAfter = errorData.retry_after;
+    }
+    if (errorData.bucket) {
+      error.bucket = errorData.bucket;
+    }
+    if (errorData.commandId) {
+      error.commandId = errorData.commandId;
+    }
 
     return error;
   }
@@ -80,6 +92,15 @@ function handleApiError(response, errorData) {
   error.category = "HTTP_ERROR";
   error.severity = status >= 500 ? "HIGH" : "MEDIUM";
   error.retryable = [429, 500, 502, 503].includes(status);
+  if (typeof errorData?.retry_after === "number") {
+    error.retryAfter = errorData.retry_after;
+  }
+  if (errorData?.bucket) {
+    error.bucket = errorData.bucket;
+  }
+  if (errorData?.commandId) {
+    error.commandId = errorData.commandId;
+  }
 
   return error;
 }
