@@ -12,11 +12,11 @@ Una librería ligera, completa y **totalmente tipada** para interactuar con la A
 
 ## ✨ Características
 
-- 🎯 **Cobertura Total**: Soporte para el 100% de los endpoints de la API v1.
+- 🎯 **Soporte API Actual**: Usa `https://api.erlc.gg/v2` donde está disponible.
 - 🛡️ **Tipado TypeScript**: Definiciones de tipos incluidas nativamente.
 - ⚡ **Ligero y Rápido**: Sin dependencias pesadas innecesarias.
 - 🔒 **Seguro**: Validación de tokens y manejo de errores robusto.
-- 🆕 **Actualizado**: Soporte para `GlobalToken` opcional (v3.2.0+).
+- 🆕 **Actualizado**: Soporte para global API keys opcionales en apps grandes.
 
 ## 📦 Instalación
 
@@ -75,6 +75,16 @@ console.table(players); // Muestra nombre, ID, permisos y equipo
 
 // Obtener vehículos en el mapa
 const vehicles = await erlc.getVehicles(serverToken);
+
+// Obtener llamadas de emergencia
+const emergencyCalls = await erlc.getEmergencyCalls(serverToken);
+
+// Obtener información del servidor con includes de v2 en una sola petición
+const fullServer = await erlc.getServer(serverToken, {
+  players: true,
+  staff: true,
+  emergencyCalls: true,
+});
 ```
 
 ### 📜 Registros (Logs)
@@ -104,36 +114,6 @@ const bans = await erlc.getBans(serverToken);
 // Obtener Staff del servidor
 const staff = await erlc.getStaff(serverToken);
 ```
-
----
-
-## 🖥️ Cliente Visual (GUI para Desarrolladores)
-
-Incluimos una herramienta gráfica construida con Electron para que puedas probar todos los endpoints de la API sin escribir código. Ideal para verificar tus keys y explorar la data.
-
-![Electron App Preview](Assets/Preview.png)
-
-### ¿Cómo usarla?
-
-1. Clona el repositorio:
-
-```bash
-git clone https://github.com/Exodo0/ERLC-API.git
-cd ERLC-API
-```
-
-2. Ejecuta el cliente visual:
-
-```bash
-npm run gui:dev
-```
-
-La aplicación te permitirá:
-
-- Guardar tus credenciales (Server Token / Global Token).
-- Probar **todos** los endpoints con un solo clic.
-- Ver las respuestas JSON formateadas y coloreadas.
-- Ejecutar comandos remotos en tu servidor.
 
 ### 📢 Otros Comandos
 
@@ -177,7 +157,7 @@ try {
 
 ## 🔗 Enlaces Útiles
 
-- [Documentación Oficial de PRC](https://apidocs.policeroleplay.community/)
+- [Documentación Oficial de ER:LC](https://apidocs.erlc.gg/)
 - [Discord de Soporte PRC](https://discord.gg/prc)
 - [NPM Package](https://www.npmjs.com/package/erlc-api)
 

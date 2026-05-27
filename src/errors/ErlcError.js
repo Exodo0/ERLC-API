@@ -21,6 +21,9 @@ class ErlcError extends Error {
       message: this.message,
       code: this.code,
       status: this.status,
+      retryAfter: this.retryAfter,
+      bucket: this.bucket,
+      commandId: this.commandId,
       timestamp: this.timestamp,
       stack: this.stack,
     };

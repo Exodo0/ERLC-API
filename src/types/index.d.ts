@@ -6,6 +6,9 @@ export class ErlcError extends Error {
   severity?: string;
   suggestions?: string[];
   retryable?: boolean;
+  retryAfter?: number;
+  bucket?: string;
+  commandId?: string;
   timestamp: string;
   originalError?: Error;
 
@@ -42,7 +45,10 @@ export interface ClientConfig {
   fetch?: (url: string, init?: any) => Promise<any>;
 }
 
-export const BASEURL = "https://api.policeroleplay.community/v1";
+export const API_ORIGIN = "https://api.erlc.gg";
+export const API_VERSION = "v2";
+export const BASEURL = "https://api.erlc.gg/v2";
+export const LEGACY_BASEURL = "https://api.erlc.gg/v1";
 
 type PlayerId = string;
 type PlayerName = string;
@@ -66,11 +72,30 @@ export interface ServerStatus {
   AccVerifiedReq: "Disabled" | "Email" | "Phone/ID"; // The level of verification roblox accounts need to join the private server
   TeamBalance: boolean; // If team balance is enabled or not
   VanityURL: string; // The vanity URL to join the server
+  Players?: ServerPlayer[];
+  Staff?: ServerStaff;
+  JoinLogs?: JoinLog[];
+  Queue?: number[];
+  KillLogs?: KillLog[];
+  CommandLogs?: CommandLog[];
+  ModCalls?: ModcallLog[];
+  EmergencyCalls?: EmergencyCall[];
+  Vehicles?: VehiclesLog[];
 }
 
 export interface ServerPlayer {
   Player: ErlcPlayer;
+  Team?: string;
+  Callsign?: string | null;
+  Location?: {
+    LocationX?: number;
+    LocationZ?: number;
+    PostalCode?: string;
+    StreetName?: string;
+    BuildingNumber?: string;
+  };
   Permission: ErlcPlayerPermission;
+  WantedStars?: number;
 }
 
 export interface JoinLog {
@@ -102,13 +127,39 @@ export type ServerBan = Record<PlayerId, PlayerName>;
 export interface VehiclesLog {
   Texture: string | null;
   Name: string;
-  Owner: ErlcPlayer;
+  Owner: string;
+  Plate?: string;
+  ColorHex?: string;
+  ColorName?: string;
 }
 
 export interface ServerStaff {
-  CoOwners: number[];
   Admins: Record<string, string>;
   Mods: Record<string, string>;
+  Helpers?: Record<string, string>;
+}
+
+export interface EmergencyCall {
+  Team: string;
+  Caller: number;
+  Players: number[];
+  Position: [number, number];
+  StartedAt: number;
+  CallNumber: number;
+  Description: string;
+  PositionDescriptor: string;
+}
+
+export interface ServerIncludeOptions {
+  players?: boolean;
+  staff?: boolean;
+  joinLogs?: boolean;
+  queue?: boolean;
+  killLogs?: boolean;
+  commandLogs?: boolean;
+  modCalls?: boolean;
+  emergencyCalls?: boolean;
+  vehicles?: boolean;
 }
 
 export interface VSMCommandBody {
@@ -120,9 +171,13 @@ export function getCommandLogs(serverToken: string): Promise<CommandLog[]>;
 export function getJoinLogs(serverToken: string): Promise<JoinLog[]>;
 export function getKillLogs(serverToken: string): Promise<KillLog[]>;
 export function getModcallLogs(serverToken: string): Promise<ModcallLog[]>;
+export function getEmergencyCalls(serverToken: string): Promise<EmergencyCall[]>;
 export function getPlayers(serverToken: string): Promise<ServerPlayer[]>;
 export function getQueue(serverToken: string): Promise<number[]>;
-export function getServer(serverToken: string): Promise<ServerStatus>;
+export function getServer(
+  serverToken: string,
+  options?: ServerIncludeOptions,
+): Promise<ServerStatus>;
 export function getStaff(serverToken: string): Promise<ServerStaff>;
 export function getVehicles(serverToken: string): Promise<VehiclesLog[]>;
 export function runCommand(

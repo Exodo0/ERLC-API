@@ -12,11 +12,11 @@ A lightweight, complete, and **fully typed** library for interacting with the *E
 
 ## ✨ Features
 
-- 🎯 **Full Coverage**: Support for 100% of the API v1 endpoints.
+- 🎯 **Current API Support**: Uses `https://api.erlc.gg/v2` where available.
 - 🛡️ **TypeScript Support**: Native type definitions included.
 - ⚡ **Lightweight & Fast**: No unnecessary heavy dependencies.
 - 🔒 **Secure**: Robust token validation and error handling.
-- 🆕 **Up-to-date**: Support for optional `GlobalToken` (v3.2.0+).
+- 🆕 **Up-to-date**: Supports optional global API keys for large-scale apps.
 
 ## 📦 Installation
 
@@ -71,6 +71,16 @@ console.table(players); // Shows name, ID, permission, and team
 
 // Get vehicles on the map
 const vehicles = await erlc.getVehicles(serverToken);
+
+// Get emergency calls
+const emergencyCalls = await erlc.getEmergencyCalls(serverToken);
+
+// Fetch server info with v2 include flags in one request
+const fullServer = await erlc.getServer(serverToken, {
+  players: true,
+  staff: true,
+  emergencyCalls: true,
+});
 ```
 
 ### 📜 Logs
@@ -104,35 +114,6 @@ const staff = await erlc.getStaff(serverToken);
 const queue = await erlc.getQueue(serverToken);
 ```
 
----
-
-## 🖥️ Visual Client (Dev Tool)
-
-We include a GUI tool built with Electron so you can test all API endpoints without writing code. Ideal for verifying your keys and exploring data.
-
-![Electron App Preview](Assets/Preview.png)
-
-### How to use it?
-
-1. Clone the repository:
-```bash
-git clone https://github.com/Exodo0/ERLC-API.git
-cd ERLC-API
-```
-
-2. Run the visual client:
-```bash
-npm run gui:dev
-```
-
-The app allows you to:
-- Save your credentials (Server Token / Global Token).
-- Test **all** endpoints with a single click.
-- View formatted and colored JSON responses.
-- Run remote commands on your server.
-
----
-
 ### ⚡ Run Command
 
 Execute commands directly from your code:
@@ -158,10 +139,10 @@ try {
 
 | Error Code | Description |
 |------------|-------------|
-| `401` | Unauthorized (Invalid Token) |
-| `403` | Forbidden (Permissions issue) |
-| `429` | Rate Limit Exceeded |
-| `500` | Internal Server Error |
+| `2002` | Invalid or expired server key |
+| `3002` | Server offline |
+| `4001` | Rate limit exceeded |
+| `9999` | In-game server module is out of date |
 
 ---
 

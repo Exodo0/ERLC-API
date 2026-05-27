@@ -9,8 +9,10 @@ exports.config = {
       killlogs: 3000,
       commandlogs: 3000,
       modcalls: 3000,
+      emergencycalls: 3000,
       staff: 10000,
       queue: 2000,
+      bans: 10000,
     },
     staleWhileRevalidate: false,
   },
@@ -18,11 +20,14 @@ exports.config = {
   fetch: null,
 };
 
+Object.assign(exports, require("./constants.js"));
+
 exports.getBans = require("./functions/server/getBans.js");
 exports.getCommandLogs = require("./functions/server/getCommandLogs.js");
 exports.getJoinLogs = require("./functions/server/getJoinLogs.js");
 exports.getKillLogs = require("./functions/server/getKillLogs.js");
 exports.getModcallLogs = require("./functions/server/getModcallLogs.js");
+exports.getEmergencyCalls = require("./functions/server/getEmergencyCalls.js");
 exports.getPlayers = require("./functions/server/getPlayers.js");
 exports.getServer = require("./functions/server/getServer.js");
 exports.getQueue = require("./functions/server/getQueue.js");
