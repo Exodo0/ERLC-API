@@ -1,188 +1,89 @@
-# 🚔 ER:LC API Wrapper
+# erlc-api
 
-[![npm version](https://img.shields.io/npm/v/erlc-api?style=flat-square)](https://www.npmjs.com/package/erlc-api)
-[![License](https://img.shields.io/npm/l/erlc-api?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Downloads](https://img.shields.io/npm/dt/erlc-api?style=flat-square)](https://www.npmjs.com/package/erlc-api)
+Cliente moderno y type-safe para la [API de servidores privados de ER:LC](https://apidocs.erlc.gg). La versión 4 es una reescritura ESM para Node.js 20+ sin dependencias de runtime.
 
-[🇬🇧 English Version](README.md)
+[English](README.md) · [Migración desde v3](docs/MIGRATION.md) · [Arquitectura](docs/ARCHITECTURE.md)
 
-Una librería ligera, completa y **totalmente tipada** para interactuar con la API de _Emergency Response: Liberty County_ (ER:LC). Diseñada para ofrecer la mejor experiencia de desarrollo tanto en JavaScript como en TypeScript.
-
----
-
-## ✨ Características
-
-- 🎯 **Soporte API Actual**: Usa `https://api.erlc.gg/v2` donde está disponible.
-- 🛡️ **Tipado TypeScript**: Definiciones de tipos incluidas nativamente.
-- ⚡ **Ligero y Rápido**: Sin dependencias pesadas innecesarias.
-- 🔒 **Seguro**: Validación de tokens y manejo de errores robusto.
-- 🆕 **Actualizado**: Soporte para global API keys opcionales en apps grandes.
-
-## 📦 Instalación
+## Instalación
 
 ```bash
 npm install erlc-api
-# o
-bun add erlc-api
 ```
 
-## 🚀 Inicio Rápido
+## Inicio rápido
 
-### Inicialización
+```js
+import { ErlcClient } from "erlc-api";
 
-Puedes iniciar el cliente con tu `Server Key` para reutilizarla automáticamente en todas las peticiones del servidor. El `Global Token` es opcional y solo se requiere para aplicaciones a gran escala.
-
-**JavaScript**
-
-```javascript
-const erlc = require("erlc-api");
-
-const client = new erlc.Client({
-  serverToken: "tu-server-key-aqui",
-  // globalToken: "tu-global-token-aqui", // Opcional, para apps grandes
+const erlc = new ErlcClient({
+  serverKey: process.env.ERLC_SERVER_KEY,
 });
 
-await client.ready;
-
-if (!client.connected) {
-  console.error("No se pudo conectar:", client.connectionError.message);
-}
-```
-
-**TypeScript**
-
-```typescript
-import { Client } from "erlc-api";
-
-const client = new Client({
-  serverToken: "tu-server-key-aqui",
+const server = await erlc.server.get({
+  include: ["players", "vehicles"],
 });
 
-await client.ready;
+console.log(server.Name, server.Players.length);
 ```
 
----
+TypeScript infiere los campos opcionales a partir de `include`. También existen lecturas enfocadas:
 
-## 📖 Ejemplos de Uso
+```js
+const players = await erlc.server.players();
+const staff = await erlc.server.staff();
+const calls = await erlc.server.emergencyCalls();
+```
 
-Asegúrate de tener tu `Server Key` a mano (obtenla en los ajustes de tu servidor privado en ER:LC). Cuando la key está configurada en `Client`, no necesitas volver a pasarla en cada petición.
+## Comandos
 
-### 🖥️ Información del Servidor
+```js
+const result = await erlc.commands.execute(":h Reinicio en 5 minutos");
+```
 
-```javascript
-// Obtener estado del servidor
-const server = await client.getServer();
-console.log(
-  `Servidor: ${server.Name} | Jugadores: ${server.CurrentPlayers}/${server.MaxPlayers}`,
-);
+Los comandos nunca se reintentan automáticamente para evitar ejecuciones dobles. Los GET seguros sí respetan `Retry-After`, esperan los buckets conocidos y reintentan errores 429/5xx.
 
-// Obtener jugadores conectados
-const players = await client.getPlayers();
-console.table(players); // Muestra nombre, ID, permisos y equipo
+## Aplicaciones públicas
 
-// Obtener vehículos en el mapa
-const vehicles = await client.getVehicles();
-
-// Obtener llamadas de emergencia
-const emergencyCalls = await client.getEmergencyCalls();
-
-// Obtener información del servidor con includes de v2 en una sola petición
-const fullServer = await client.getServer({
-  players: true,
-  staff: true,
-  emergencyCalls: true,
+```js
+const erlc = new ErlcClient({
+  serverKey: userServerKey,
+  authorization: process.env.ERLC_GLOBAL_API_KEY,
 });
 ```
 
-### 📜 Registros (Logs)
+```js
+import { createAuthorizationUrl } from "erlc-api/auth";
 
-Accede a los historiales de actividad de tu servidor:
-
-```javascript
-// Logs de Entradas/Salidas
-const joinLogs = await client.getJoinLogs();
-
-// Logs de Muertes (Killfeed)
-const killLogs = await client.getKillLogs();
-
-// Logs de Comandos ejecutados
-const commandLogs = await client.getCommandLogs();
-
-// Logs de Llamadas a Moderadores
-const modCalls = await client.getModcallLogs();
+const url = createAuthorizationUrl({
+  serverId: "123456",
+  applicationId: "987654",
+});
 ```
 
-### 🛠️ Gestión y Administración
+## Webhooks
 
-```javascript
-// Ver lista de Baneos
-const bans = await client.getBans();
+La firma debe verificarse contra los bytes crudos, antes de parsear JSON:
 
-// Obtener Staff del servidor
-const staff = await client.getStaff();
+```js
+import { parseEventWebhook } from "erlc-api/webhooks";
 
-// Obtener cola del servidor
-const queue = await client.getQueue();
+const rawBody = new Uint8Array(await request.arrayBuffer());
+const event = parseEventWebhook(rawBody, request.headers, {
+  maxAgeMs: 5 * 60_000,
+});
 ```
 
-### 📢 Otros Comandos
+## Decisiones de v4
 
-```javascript
-// Ejecutar comando remoto (Ej: Anuncio)
-await client.runCommand(":h ¡Hola desde la API!");
+- ESM-only y Node.js `>=20.8`.
+- TypeScript es la única fuente de código y de typings.
+- Cero dependencias de runtime; usa `fetch`, `AbortSignal` y `crypto` nativos.
+- Estado, credenciales, caché y rate limits aislados por cliente.
+- v2 para todas las lecturas disponibles; v1 solo para `bans`.
+- `Client` continúa como alias; las funciones globales y la configuración mutable de v3 se eliminaron.
 
-// Resetear Global Key (Solo si tienes una configurada)
-// await erlc.resetGlobalKey();
-```
+Consulta la [guía de migración](docs/MIGRATION.md) para el mapeo completo.
 
-### Uso con Token Manual
+Nunca expongas Server-Keys o claves globales en el navegador, logs o repositorios. Sigue las [políticas oficiales](https://apidocs.erlc.gg/policies/aup) y la documentación de [rate limits](https://apidocs.erlc.gg/rate-limits).
 
-También puedes seguir pasando la server key directamente si prefieres el estilo anterior:
-
-```javascript
-const server = await erlc.getServer("tu-server-key-aqui");
-const players = await erlc.getPlayers("tu-server-key-aqui");
-```
-
----
-
-## 🚨 Manejo de Errores
-
-La librería lanza errores descriptivos (`ErlcError`) que facilitan la depuración.
-
-```javascript
-try {
-  const client = new erlc.Client({ serverToken: "token-invalido" });
-  await client.connect();
-} catch (error) {
-  console.error(`Error ${error.code}: ${error.message}`);
-
-  if (error.code === 4001)
-    console.log("⏳ Rate limit alcanzado, espera un momento.");
-  if (error.code === 2002)
-    console.log("🔑 La Server Key es inválida o expiró.");
-}
-```
-
-### Códigos Comunes
-
-|  Código  | Significado      | Solución                                       |
-| :------: | ---------------- | ---------------------------------------------- |
-| **2002** | Key Inválida     | Verifica tu `Server-Key` en el juego.          |
-| **3002** | Servidor Offline | El servidor no tiene jugadores o está apagado. |
-| **4001** | Rate Limit       | Estás enviando muchas peticiones muy rápido.   |
-| **403**  | No Autorizado    | Verifica tus permisos o tokens.                |
-
----
-
-## 🔗 Enlaces Útiles
-
-- [Documentación Oficial de ER:LC](https://apidocs.erlc.gg/)
-- [Discord de Soporte PRC](https://discord.gg/prc)
-- [NPM Package](https://www.npmjs.com/package/erlc-api)
-
----
-
-<div align="center">
-  <sub>Hecho con ❤️ para la comunidad de ER:LC</sub>
-</div>
+Este paquete comunitario no es un producto oficial de ER:LC. Licencia MIT.
