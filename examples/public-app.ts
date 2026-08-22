@@ -2,7 +2,7 @@ import { ErlcClient, createAuthorizationUrl } from "erlc-api";
 
 const client = new ErlcClient({
   serverKey: process.env.ERLC_SERVER_KEY!,
-  authorization: process.env.ERLC_GLOBAL_API_KEY!,
+  globalToken: process.env.ERLC_GLOBAL_API_KEY!,
   onRateLimit: (bucket) => console.warn("ER:LC rate limit", bucket),
   onResponse: (response) => console.info(response.status, response.durationMs),
 });

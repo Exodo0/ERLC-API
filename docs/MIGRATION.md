@@ -23,7 +23,7 @@ If your application is currently CommonJS, migrate it to ESM (for example, add `
 - await client.ready;
 + const client = new ErlcClient({
 +   serverKey: process.env.ERLC_SERVER_KEY,
-+   authorization: process.env.ERLC_GLOBAL_KEY,
++   globalToken: process.env.ERLC_GLOBAL_KEY,
 + });
 ```
 

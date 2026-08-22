@@ -36,6 +36,12 @@ v4 requires Node.js 20.8 or newer and is ESM-only. This enables native Fetch, mo
 
 Dual ESM/CJS output was rejected for v4 because it would add a second module graph and interop surface solely for legacy runtimes. JavaScript support does not require CommonJS: `.js` consumers use native `import`, while TypeScript consumes the same generated declarations.
 
+## Type publication and IntelliSense
+
+`ErlcClientOptions`, `ServerResource`, and `CommandResource` are public named interfaces generated from the TypeScript source. The public constructor is emitted as `constructor(options: ErlcClientOptions)`, so editors can contextually suggest options without a manual type import. JSDoc lives on the source declarations and is preserved in `dist/*.d.ts`.
+
+Each package export has an explicit `types` condition. `typesVersions` mirrors the root, `auth`, `maps`, and `webhooks` declarations for consumers using legacy `moduleResolution` modes that do not understand package export conditions. CI uses the TypeScript language service—the engine behind VS Code IntelliSense—to assert completions in TypeScript, checked JavaScript, and normal JavaScript.
+
 ## API version policy
 
 New reads use `GET /v2/server` with only the requested include flags. `GET /v1/server/bans` remains because the official v2 schema does not expose bans and ER:LC explicitly permits v1 APIs that have no v2 equivalent. No other legacy endpoint is used.

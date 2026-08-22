@@ -1,6 +1,12 @@
-import { ErlcClient, type ServerInfo } from "../src/index.js";
+import { ErlcClient, type ErlcClientOptions, type ServerInfo } from "../src/index.js";
 
-const client = new ErlcClient({ serverKey: "secret" });
+const options = {
+  serverKey: "secret",
+  globalToken: "global-secret",
+  timeoutMs: 10_000,
+} satisfies ErlcClientOptions;
+
+const client = new ErlcClient(options);
 const base = await client.server.get();
 base satisfies ServerInfo;
 // @ts-expect-error Optional fields are absent unless explicitly included.

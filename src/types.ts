@@ -132,14 +132,22 @@ export interface CommandResult {
 }
 
 export interface FetchServerOptions<I extends readonly ServerInclude[] = readonly []> {
+  /** Optional v2 data sets to include in the consolidated response. */
   include?: I;
+  /** AbortSignal used to cancel this request. */
   signal?: AbortSignal;
   /** Override the client's GET cache for this request. `true` uses the default TTL. */
   cache?: boolean | number;
 }
 
 export interface RequestOptions {
+  /** AbortSignal used to cancel this request. */
   signal?: AbortSignal;
+}
+
+export interface ClientCacheOptions {
+  /** Default lifetime of cached GET responses in milliseconds. */
+  ttlMs?: number;
 }
 
 export interface RateLimitInfo {
@@ -159,19 +167,40 @@ export interface ResponseMetadata {
 }
 
 export interface ErlcClientOptions {
-  /** ER:LC private server key. Required by every documented API endpoint. */
+  /**
+   * ER:LC private server key from the in-game API settings.
+   * Required by every documented API endpoint and never shared between clients.
+   */
   serverKey: string;
-  /** Global API key for a registered public or large application. */
-  authorization?: string;
+
+  /**
+   * Global API key for a registered public or large application.
+   * It is sent in the `Authorization` header alongside `serverKey`.
+   */
+  globalToken?: string;
+
+  /** Override the ER:LC API origin. Primarily useful for tests and proxies. */
   baseUrl?: string;
+
+  /** Abort a request after this many milliseconds. Defaults to 15,000. */
   timeoutMs?: number;
+
+  /** Custom Fetch-compatible implementation. Node.js native `fetch` is used by default. */
   fetch?: FetchLike;
+
   /** Safe GET retries after 429/5xx responses. Commands are never retried. */
   maxRetries?: number;
+
   /** Wait for known bucket resets and Retry-After instead of failing immediately. */
   autoWait?: boolean;
-  cache?: false | { ttlMs?: number };
+
+  /** Optional per-client GET cache. Caching is disabled unless a positive TTL is provided. */
+  cache?: false | ClientCacheOptions;
+
+  /** Called after every HTTP response. Exceptions thrown by the hook are ignored. */
   onResponse?: (metadata: ResponseMetadata) => void;
+
+  /** Called when ER:LC responds with HTTP 429. */
   onRateLimit?: (rateLimit: RateLimitInfo) => void;
 }
 

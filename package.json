@@ -8,21 +8,32 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./auth": {
       "types": "./dist/auth.d.ts",
-      "import": "./dist/auth.js"
+      "import": "./dist/auth.js",
+      "default": "./dist/auth.js"
     },
     "./maps": {
       "types": "./dist/maps.d.ts",
-      "import": "./dist/maps.js"
+      "import": "./dist/maps.js",
+      "default": "./dist/maps.js"
     },
     "./webhooks": {
       "types": "./dist/webhooks.d.ts",
-      "import": "./dist/webhooks.js"
+      "import": "./dist/webhooks.js",
+      "default": "./dist/webhooks.js"
     },
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "auth": ["dist/auth.d.ts"],
+      "maps": ["dist/maps.d.ts"],
+      "webhooks": ["dist/webhooks.d.ts"]
+    }
   },
   "files": [
     "dist",
@@ -54,7 +65,7 @@
     "build": "tsc -p tsconfig.build.json",
     "clean": "node ./scripts/clean.mjs",
     "prepack": "pnpm run clean && pnpm run build",
-    "test": "pnpm run build && node --test tests/client.test.mjs tests/helpers.test.mjs",
+    "test": "pnpm run build && node --test tests/client.test.mjs tests/helpers.test.mjs tests/intellisense.test.mjs",
     "test:types": "tsc -p tsconfig.types-test.json",
     "check": "pnpm run test && pnpm run test:types && pnpm pack --dry-run"
   },

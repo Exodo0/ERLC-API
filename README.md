@@ -59,7 +59,7 @@ Provide the global API key in addition to the user's server key:
 ```js
 const erlc = new ErlcClient({
   serverKey: userServerKey,
-  authorization: process.env.ERLC_GLOBAL_API_KEY,
+  globalToken: process.env.ERLC_GLOBAL_API_KEY,
 });
 ```
 
