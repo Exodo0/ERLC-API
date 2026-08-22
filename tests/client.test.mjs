@@ -17,7 +17,7 @@ test("v2 include flags, authentication headers, and inferred response shape", as
   let request;
   const client = new ErlcClient({
     serverKey: "server-secret",
-    authorization: "app-secret",
+    globalToken: "app-secret",
     fetch: async (input, init) => {
       request = { url: String(input), init };
       return jsonResponse({ Name: "Test", Players: [], Vehicles: [] });
@@ -30,6 +30,10 @@ test("v2 include flags, authentication headers, and inferred response shape", as
   assert.equal(request.init.headers.get("authorization"), "app-secret");
   assert.deepEqual(result.Players, []);
   assert.deepEqual(result.Vehicles, []);
+});
+
+test("globalToken is validated before requests", () => {
+  assert.throws(() => new ErlcClient({ serverKey: "secret", globalToken: "" }), /globalToken/);
 });
 
 test("instances never share credentials", async () => {

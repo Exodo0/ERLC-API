@@ -1,4 +1,9 @@
-export { Client, ErlcClient } from "./client.js";
+export {
+  Client,
+  ErlcClient,
+  type CommandResource,
+  type ServerResource,
+} from "./client.js";
 export {
   AuthenticationError,
   ErlcError,

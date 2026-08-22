@@ -59,7 +59,7 @@ export class Transport {
   constructor(options: ErlcClientOptions) {
     this.#baseUrl = options.baseUrl?.replace(/\/$/, "") ?? "https://api.erlc.gg";
     this.#serverKey = options.serverKey;
-    this.#authorization = options.authorization;
+    this.#authorization = options.globalToken;
     this.#fetch = options.fetch ?? globalThis.fetch;
     this.#timeoutMs = options.timeoutMs ?? 15_000;
     this.#maxRetries = options.maxRetries ?? 2;

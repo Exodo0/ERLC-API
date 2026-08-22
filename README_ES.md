@@ -47,7 +47,7 @@ Los comandos nunca se reintentan automáticamente para evitar ejecuciones dobles
 ```js
 const erlc = new ErlcClient({
   serverKey: userServerKey,
-  authorization: process.env.ERLC_GLOBAL_API_KEY,
+  globalToken: process.env.ERLC_GLOBAL_API_KEY,
 });
 ```
 
