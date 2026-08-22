@@ -1,10 +1,42 @@
 {
   "name": "erlc-api",
-  "version": "3.3.3",
-  "description": "An ER:LC API wrapper for JS/TS",
-  "main": "index.js",
-  "types": "src/types/index.d.ts",
-  "packageManager": "pnpm@11.1.2",
+  "version": "4.0.0",
+  "description": "Modern, type-safe ER:LC Private Server API client for Node.js",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "import": "./dist/auth.js"
+    },
+    "./maps": {
+      "types": "./dist/maps.d.ts",
+      "import": "./dist/maps.js"
+    },
+    "./webhooks": {
+      "types": "./dist/webhooks.d.ts",
+      "import": "./dist/webhooks.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "examples",
+    "README.md",
+    "README_ES.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.8"
+  },
+  "packageManager": "pnpm@11.19.0",
   "keywords": [
     "erlc",
     "roblox",
@@ -15,22 +47,16 @@
   "author": "egologics",
   "license": "MIT",
   "devDependencies": {
-    "jest": "^30.4.2",
+    "@types/node": "^20.19.0",
     "typescript": "^6.0.3"
   },
-  "dependencies": {
-    "chalk": "^5.6.2",
-    "cli-table3": "^0.6.5",
-    "node-fetch": "^3.3.2",
-    "ora": "^9.4.0"
-  },
   "scripts": {
-    "test": "jest"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "unrs-resolver"
-    ]
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "node ./scripts/clean.mjs",
+    "prepack": "pnpm run clean && pnpm run build",
+    "test": "pnpm run build && node --test tests/client.test.mjs tests/helpers.test.mjs",
+    "test:types": "tsc -p tsconfig.types-test.json",
+    "check": "pnpm run test && pnpm run test:types && pnpm pack --dry-run"
   },
   "repository": {
     "type": "git",

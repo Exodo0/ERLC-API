@@ -1,7 +1,8 @@
 CustomLiveries
-.github
 bun.lock
 node_modules
+dist
+*.tgz
 
 test-project
 
