@@ -161,7 +161,15 @@ test("timeouts abort the underlying fetch and retain a structured error", async 
     timeoutMs: 5,
     fetch: async (_input, init) =>
       new Promise((_resolve, reject) => {
-        init.signal.addEventListener("abort", () => reject(init.signal.reason), { once: true });
+        const guard = setTimeout(() => reject(new Error("timeout signal did not abort")), 1_000);
+        init.signal.addEventListener(
+          "abort",
+          () => {
+            clearTimeout(guard);
+            reject(init.signal.reason);
+          },
+          { once: true },
+        );
       }),
   });
   await assert.rejects(
