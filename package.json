@@ -53,7 +53,7 @@
   "engines": {
     "node": ">=20.8"
   },
-  "packageManager": "pnpm@11.19.0",
+  "packageManager": "pnpm@10.34.5",
   "keywords": [
     "erlc",
     "roblox",
