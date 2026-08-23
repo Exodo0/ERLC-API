@@ -1,15 +1,23 @@
-import { ErlcClient, createAuthorizationUrl } from "erlc-api";
+import { ErlcClient } from "erlc-api";
+import { createAuthorizationUrlFromServerKey } from "erlc-api/auth";
+
+const serverKey = process.env.ERLC_SERVER_KEY;
+const globalToken = process.env.ERLC_GLOBAL_TOKEN;
+const applicationId = process.env.ERLC_APP_ID;
+if (!serverKey || !globalToken || !applicationId) {
+  throw new Error("Set ERLC_SERVER_KEY, ERLC_GLOBAL_TOKEN, and ERLC_APP_ID");
+}
 
 const client = new ErlcClient({
-  serverKey: process.env.ERLC_SERVER_KEY!,
-  globalToken: process.env.ERLC_GLOBAL_API_KEY!,
+  serverKey,
+  globalToken,
   onRateLimit: (bucket) => console.warn("ER:LC rate limit", bucket),
   onResponse: (response) => console.info(response.status, response.durationMs),
 });
 
-const onboardingUrl = createAuthorizationUrl({
-  serverId: process.env.ERLC_INTERNAL_SERVER_ID!,
-  applicationId: process.env.ERLC_APPLICATION_ID!,
+const onboardingUrl = createAuthorizationUrlFromServerKey({
+  serverKey,
+  applicationId,
 });
 
 console.log("Authorization URL:", onboardingUrl);

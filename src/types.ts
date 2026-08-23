@@ -110,8 +110,9 @@ export type ServerInclude =
   | "emergencyCalls"
   | "vehicles";
 
-type IncludedFields<I extends readonly ServerInclude[]> =
-  ("players" extends I[number] ? Pick<ServerIncludeData, "Players"> : unknown) &
+type IncludedFields<I extends readonly ServerInclude[]> = ("players" extends I[number]
+  ? Pick<ServerIncludeData, "Players">
+  : unknown) &
   ("staff" extends I[number] ? Pick<ServerIncludeData, "Staff"> : unknown) &
   ("joinLogs" extends I[number] ? Pick<ServerIncludeData, "JoinLogs"> : unknown) &
   ("queue" extends I[number] ? Pick<ServerIncludeData, "Queue"> : unknown) &
@@ -121,8 +122,8 @@ type IncludedFields<I extends readonly ServerInclude[]> =
   ("emergencyCalls" extends I[number] ? Pick<ServerIncludeData, "EmergencyCalls"> : unknown) &
   ("vehicles" extends I[number] ? Pick<ServerIncludeData, "Vehicles"> : unknown);
 
-export type ServerResponse<I extends readonly ServerInclude[] = readonly []> =
-  ServerInfo & IncludedFields<I>;
+export type ServerResponse<I extends readonly ServerInclude[] = readonly []> = ServerInfo &
+  IncludedFields<I>;
 
 export type ServerBans = Record<string, string>;
 
@@ -166,16 +167,23 @@ export interface ResponseMetadata {
   rateLimit?: RateLimitInfo;
 }
 
+/**
+ * Configuration used to create an {@link ErlcClient} instance.
+ *
+ * Only `serverKey` is required for a private integration. Public Applications
+ * also provide `globalToken`; advanced transport controls are optional.
+ */
 export interface ErlcClientOptions {
   /**
-   * ER:LC private server key from the in-game API settings.
-   * Required by every documented API endpoint and never shared between clients.
+   * ER:LC private server API key used to authenticate requests for this server.
+   * Treat it as a password and keep it in a server-side secret store.
    */
   serverKey: string;
 
   /**
-   * Global API key for a registered public or large application.
-   * It is sent in the `Authorization` header alongside `serverKey`.
+   * Global API Key for a registered Public Application.
+   * It identifies the application through the `Authorization` header and is not
+   * required for a normal private, single-server integration.
    */
   globalToken?: string;
 

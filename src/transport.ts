@@ -1,11 +1,6 @@
 import { ErlcError, errorFromResponse } from "./errors.js";
 import { RateLimitStore, readRateLimit } from "./rate-limit.js";
-import type {
-  ErlcClientOptions,
-  FetchLike,
-  RateLimitInfo,
-  ResponseMetadata,
-} from "./types.js";
+import type { ErlcClientOptions, FetchLike, RateLimitInfo, ResponseMetadata } from "./types.js";
 
 interface TransportRequest {
   method: "GET" | "POST";
@@ -64,7 +59,7 @@ export class Transport {
     this.#timeoutMs = options.timeoutMs ?? 15_000;
     this.#maxRetries = options.maxRetries ?? 2;
     this.#autoWait = options.autoWait ?? true;
-    this.#defaultCacheTtlMs = options.cache === false ? 0 : options.cache?.ttlMs ?? 0;
+    this.#defaultCacheTtlMs = options.cache === false ? 0 : (options.cache?.ttlMs ?? 0);
     this.#onResponse = options.onResponse;
     this.#onRateLimit = options.onRateLimit;
   }
@@ -72,9 +67,8 @@ export class Transport {
   request<T>(request: TransportRequest): Promise<T> {
     const url = new URL(request.path, `${this.#baseUrl}/`);
     if (request.query) url.search = request.query.toString();
-    const cacheTtlMs = request.method === "GET"
-      ? request.cacheTtlMs ?? this.#defaultCacheTtlMs
-      : 0;
+    const cacheTtlMs =
+      request.method === "GET" ? (request.cacheTtlMs ?? this.#defaultCacheTtlMs) : 0;
     const cacheKey = url.href;
 
     if (cacheTtlMs > 0) {
@@ -85,12 +79,14 @@ export class Transport {
       if (active) return active.then((value) => clone(value as T));
     }
 
-    const operation = this.#execute<T>(url, request).then((value) => {
-      if (cacheTtlMs > 0) {
-        this.#cache.set(cacheKey, { value: clone(value), expiresAt: Date.now() + cacheTtlMs });
-      }
-      return value;
-    }).finally(() => this.#inflight.delete(cacheKey));
+    const operation = this.#execute<T>(url, request)
+      .then((value) => {
+        if (cacheTtlMs > 0) {
+          this.#cache.set(cacheKey, { value: clone(value), expiresAt: Date.now() + cacheTtlMs });
+        }
+        return value;
+      })
+      .finally(() => this.#inflight.delete(cacheKey));
 
     if (cacheTtlMs > 0) this.#inflight.set(cacheKey, operation);
     return operation;
@@ -160,9 +156,17 @@ export class Transport {
         durationMs: performance.now() - startedAt,
         ...(rateLimit ? { rateLimit } : {}),
       };
-      try { this.#onResponse?.(metadata); } catch { /* Observability hooks cannot break requests. */ }
+      try {
+        this.#onResponse?.(metadata);
+      } catch {
+        /* Observability hooks cannot break requests. */
+      }
       if (response.status === 429 && rateLimit) {
-        try { this.#onRateLimit?.(rateLimit); } catch { /* Observability hooks cannot break requests. */ }
+        try {
+          this.#onRateLimit?.(rateLimit);
+        } catch {
+          /* Observability hooks cannot break requests. */
+        }
       }
 
       if (response.ok) {
@@ -181,7 +185,8 @@ export class Transport {
       const error = errorFromResponse(response, body, rateLimit);
       const canRetry = request.safeToRetry && error.retryable && attempt < this.#maxRetries;
       if (!canRetry) throw error;
-      if (rateLimit && response.status === 429) await this.#rateLimits.wait(rateLimit, request.signal);
+      if (rateLimit && response.status === 429)
+        await this.#rateLimits.wait(rateLimit, request.signal);
       else await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
     }
   }

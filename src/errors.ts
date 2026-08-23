@@ -67,7 +67,9 @@ export class RateLimitError extends ErlcError {
 }
 
 export class AuthenticationError extends ErlcError {
-  constructor(options: Omit<ErlcErrorOptions, "kind"> & { kind?: "authentication" | "authorization" }) {
+  constructor(
+    options: Omit<ErlcErrorOptions, "kind"> & { kind?: "authentication" | "authorization" },
+  ) {
     super({ ...options, kind: options.kind ?? "authentication" });
     this.name = "AuthenticationError";
   }
@@ -110,13 +112,16 @@ export function errorFromResponse(
 ): ErlcError {
   const data = bodyRecord(body);
   const code = typeof data.code === "number" ? data.code : `HTTP_${response.status}`;
-  const apiMessage = typeof data.message === "string"
-    ? data.message
-    : typeof data.error === "string"
-      ? data.error
-      : undefined;
-  const message = apiMessage ?? (typeof code === "number" ? ERROR_MESSAGES[code] : undefined)
-    ?? `${response.status} ${response.statusText || "ER:LC API request failed"}`;
+  const apiMessage =
+    typeof data.message === "string"
+      ? data.message
+      : typeof data.error === "string"
+        ? data.error
+        : undefined;
+  const message =
+    apiMessage ??
+    (typeof code === "number" ? ERROR_MESSAGES[code] : undefined) ??
+    `${response.status} ${response.statusText || "ER:LC API request failed"}`;
   const common: Omit<ErlcErrorOptions, "kind"> = {
     message,
     code,
@@ -128,7 +133,11 @@ export function errorFromResponse(
   };
 
   if (response.status === 429 || code === 4001) return new RateLimitError(common);
-  if (response.status === 401 || response.status === 403 || (typeof code === "number" && code >= 2000 && code <= 2004)) {
+  if (
+    response.status === 401 ||
+    response.status === 403 ||
+    (typeof code === "number" && code >= 2000 && code <= 2004)
+  ) {
     return new AuthenticationError({
       ...common,
       kind: code === 4000 ? "authorization" : "authentication",

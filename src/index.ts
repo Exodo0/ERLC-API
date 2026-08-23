@@ -1,31 +1,37 @@
 export {
+  type AuthorizationUrlFromServerKeyOptions,
+  type AuthorizationUrlOptions,
+  createAuthorizationUrl,
+  createAuthorizationUrlFromServerKey,
+  extractServerIdFromServerKey,
+} from "./auth.js";
+export {
   Client,
-  ErlcClient,
   type CommandResource,
+  ErlcClient,
   type ServerResource,
 } from "./client.js";
 export {
   AuthenticationError,
   ErlcError,
-  RateLimitError,
   type ErlcErrorKind,
+  RateLimitError,
 } from "./errors.js";
-export { createAuthorizationUrl, type AuthorizationUrlOptions } from "./auth.js";
 export {
   describeWorldDirection,
   fetchMapImages,
   MAP_IMAGES,
   MAP_SIZE_PIXELS,
   MAPS_ENDPOINT,
-  type MapImageList,
+  type MapImagesResponse,
   type WorldLocation,
 } from "./maps.js";
+export type * from "./types.js";
 export {
   assertEventWebhookSignature,
   EVENT_WEBHOOK_PUBLIC_KEY,
   parseEventWebhook,
+  type VerifyWebhookOptions,
   verifyEventWebhookSignature,
   WebhookVerificationError,
-  type VerifyWebhookOptions,
 } from "./webhooks.js";
-export type * from "./types.js";
