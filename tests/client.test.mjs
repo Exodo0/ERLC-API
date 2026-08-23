@@ -1,10 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  AuthenticationError,
-  ErlcClient,
-  RateLimitError,
-} from "../dist/index.js";
+import { AuthenticationError, ErlcClient, RateLimitError } from "../dist/index.js";
 
 function jsonResponse(body, init = {}) {
   return new Response(JSON.stringify(body), {
@@ -128,10 +124,10 @@ test("bans alone use the documented v1 fallback", async () => {
     serverKey: "secret",
     fetch: async (input) => {
       url = String(input);
-      return jsonResponse({ "123": "Player" });
+      return jsonResponse({ 123: "Player" });
     },
   });
-  assert.deepEqual(await client.server.bans(), { "123": "Player" });
+  assert.deepEqual(await client.server.bans(), { 123: "Player" });
   assert.equal(url, "https://api.erlc.gg/v1/server/bans");
 });
 
@@ -163,9 +159,10 @@ test("timeouts abort the underlying fetch and retain a structured error", async 
   const client = new ErlcClient({
     serverKey: "secret",
     timeoutMs: 5,
-    fetch: async (_input, init) => new Promise((_resolve, reject) => {
-      init.signal.addEventListener("abort", () => reject(init.signal.reason), { once: true });
-    }),
+    fetch: async (_input, init) =>
+      new Promise((_resolve, reject) => {
+        init.signal.addEventListener("abort", () => reject(init.signal.reason), { once: true });
+      }),
   });
   await assert.rejects(
     client.server.get(),

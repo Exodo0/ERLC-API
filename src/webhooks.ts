@@ -4,6 +4,7 @@ import type { WebhookEvent } from "./types.js";
 export const EVENT_WEBHOOK_PUBLIC_KEY =
   "MCowBQYDK2VwAyEAjSICb9pp0kHizGQtdG8ySWsDChfGqi+gyFCttigBNOA=";
 
+/** Error thrown when ER:LC webhook headers, signatures, or payloads are invalid. */
 export class WebhookVerificationError extends Error {
   constructor(message: string) {
     super(message);
@@ -33,11 +34,17 @@ function signatureInputs(headers: HeaderSource): { signature: Uint8Array; timest
 }
 
 export interface VerifyWebhookOptions {
-  /** Optional replay window. The official protocol does not mandate one. */
+  /** Optional maximum signature age used by the consumer to reduce replay risk. */
   maxAgeMs?: number;
+  /** Current Unix time in milliseconds. Intended for deterministic verification tests. */
   now?: number;
 }
 
+/**
+ * Verifies an ER:LC Ed25519 webhook signature against the exact raw body bytes.
+ * Throws for missing or malformed signature headers and returns `false` for a
+ * well-formed signature that is invalid or outside the optional replay window.
+ */
 export function verifyEventWebhookSignature(
   rawBody: Uint8Array,
   headers: HeaderSource,
@@ -47,7 +54,10 @@ export function verifyEventWebhookSignature(
   if (options.maxAgeMs !== undefined) {
     const numeric = Number(timestamp);
     const timestampMs = numeric < 1_000_000_000_000 ? numeric * 1_000 : numeric;
-    if (!Number.isFinite(timestampMs) || Math.abs((options.now ?? Date.now()) - timestampMs) > options.maxAgeMs) {
+    if (
+      !Number.isFinite(timestampMs) ||
+      Math.abs((options.now ?? Date.now()) - timestampMs) > options.maxAgeMs
+    ) {
       return false;
     }
   }
@@ -60,6 +70,10 @@ export function verifyEventWebhookSignature(
   return verify(null, message, publicKey, signature);
 }
 
+/**
+ * Verifies an ER:LC webhook and throws {@link WebhookVerificationError} when invalid.
+ * Pass the body bytes exactly as received; parsed and re-serialized JSON is unsafe.
+ */
 export function assertEventWebhookSignature(
   rawBody: Uint8Array,
   headers: HeaderSource,
@@ -70,6 +84,10 @@ export function assertEventWebhookSignature(
   }
 }
 
+/**
+ * Verifies an ER:LC webhook before parsing its raw JSON body.
+ * No payload is returned unless the Ed25519 signature is valid.
+ */
 export function parseEventWebhook<T extends WebhookEvent = WebhookEvent>(
   rawBody: Uint8Array,
   headers: HeaderSource,

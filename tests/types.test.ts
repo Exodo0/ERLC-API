@@ -1,4 +1,10 @@
+import {
+  createAuthorizationUrl,
+  createAuthorizationUrlFromServerKey,
+  extractServerIdFromServerKey,
+} from "../src/auth.js";
 import { ErlcClient, type ErlcClientOptions, type ServerInfo } from "../src/index.js";
+import { fetchMapImages, type MapImagesResponse } from "../src/maps.js";
 
 const options = {
   serverKey: "secret",
@@ -20,8 +26,29 @@ selected.Vehicles;
 
 const all = await client.server.get({
   include: [
-    "players", "staff", "joinLogs", "queue", "killLogs", "commandLogs",
-    "modCalls", "emergencyCalls", "vehicles",
+    "players",
+    "staff",
+    "joinLogs",
+    "queue",
+    "killLogs",
+    "commandLogs",
+    "modCalls",
+    "emergencyCalls",
+    "vehicles",
   ] as const,
 });
 all.Vehicles[0]?.ColorHex satisfies string | undefined;
+
+const serverId = extractServerIdFromServerKey("PrivatePartForTests-StableServerIdForTests");
+serverId satisfies string;
+createAuthorizationUrl({ serverId, applicationId: "123" }) satisfies string;
+createAuthorizationUrlFromServerKey({
+  serverKey: "PrivatePartForTests-StableServerIdForTests",
+  applicationId: 123,
+}) satisfies string;
+
+const mapResponse = await fetchMapImages(async () => new Response(JSON.stringify({ maps: [] })));
+mapResponse satisfies MapImagesResponse;
+mapResponse.maps satisfies string[];
+// @ts-expect-error The old array/record union is no longer the public response shape.
+mapResponse[0];

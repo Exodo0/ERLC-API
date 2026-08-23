@@ -30,9 +30,15 @@
   },
   "typesVersions": {
     "*": {
-      "auth": ["dist/auth.d.ts"],
-      "maps": ["dist/maps.d.ts"],
-      "webhooks": ["dist/webhooks.d.ts"]
+      "auth": [
+        "dist/auth.d.ts"
+      ],
+      "maps": [
+        "dist/maps.d.ts"
+      ],
+      "webhooks": [
+        "dist/webhooks.d.ts"
+      ]
     }
   },
   "files": [
@@ -58,16 +64,20 @@
   "author": "egologics",
   "license": "MIT",
   "devDependencies": {
+    "@biomejs/biome": "2.5.9",
     "@types/node": "^20.19.0",
     "typescript": "^6.0.3"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "node ./scripts/clean.mjs",
+    "lint": "biome check src tests examples scripts",
+    "format": "biome format --write src tests examples scripts",
     "prepack": "pnpm run clean && pnpm run build",
     "test": "pnpm run build && node --test tests/client.test.mjs tests/helpers.test.mjs tests/intellisense.test.mjs",
-    "test:types": "tsc -p tsconfig.types-test.json",
-    "check": "pnpm run test && pnpm run test:types && pnpm pack --dry-run"
+    "typecheck": "tsc -p tsconfig.types-test.json",
+    "test:types": "pnpm run typecheck",
+    "check": "pnpm run lint && pnpm run test && pnpm run typecheck && pnpm pack --dry-run"
   },
   "repository": {
     "type": "git",

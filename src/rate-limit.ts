@@ -57,11 +57,14 @@ export class RateLimitStore {
   readonly #buckets = new Map<string, RateLimitInfo>();
   readonly #routes = new Map<string, string>();
 
-  update(route: string, info: RateLimitInfo | undefined, status: number): RateLimitInfo | undefined {
+  update(
+    route: string,
+    info: RateLimitInfo | undefined,
+    status: number,
+  ): RateLimitInfo | undefined {
     if (!info) return undefined;
-    let normalized = status === 429 && info.remaining === undefined
-      ? { ...info, remaining: 0 }
-      : info;
+    let normalized =
+      status === 429 && info.remaining === undefined ? { ...info, remaining: 0 } : info;
     if (normalized.retryAfterMs !== undefined) {
       normalized = {
         ...normalized,
@@ -76,8 +79,8 @@ export class RateLimitStore {
   async beforeRequest(route: string, autoWait: boolean, signal?: AbortSignal): Promise<void> {
     const bucketName = this.#routes.get(route);
     const info = bucketName ? this.#buckets.get(bucketName) : undefined;
-    if (!info || info.remaining !== 0) return;
-    const waitMs = info.resetAt ? info.resetAt - Date.now() : info.retryAfterMs ?? 0;
+    if (info?.remaining !== 0) return;
+    const waitMs = info.resetAt ? info.resetAt - Date.now() : (info.retryAfterMs ?? 0);
     if (waitMs <= 0) return;
     if (!autoWait) {
       throw new RateLimitError({
@@ -92,7 +95,7 @@ export class RateLimitStore {
   }
 
   wait(info: RateLimitInfo, signal?: AbortSignal): Promise<void> {
-    const waitMs = info.resetAt ? info.resetAt - Date.now() : info.retryAfterMs ?? 0;
+    const waitMs = info.resetAt ? info.resetAt - Date.now() : (info.retryAfterMs ?? 0);
     return delay(Math.max(0, waitMs), signal);
   }
 

@@ -108,3 +108,20 @@ v4 removes the guessed error-code suggestions table. Applications should decide 
 ```
 
 Override a particular consolidated read with `{ cache: milliseconds }`, disable it with `{ cache: false }`, and invalidate the client cache with `client.clearCache()`.
+
+## Helper response corrections
+
+The maps helper now mirrors the documented live response envelope instead of a guessed union:
+
+```diff
+ const result = await fetchMapImages();
+-// string[] | Record<string, string>
++result.maps; // string[]
+```
+
+Authorization helpers can now derive the documented Internal Server ID locally from a Server-Key:
+
+```js
+const serverId = extractServerIdFromServerKey(serverKey);
+const url = createAuthorizationUrl({ serverId, applicationId });
+```

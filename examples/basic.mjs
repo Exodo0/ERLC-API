@@ -7,8 +7,10 @@ const erlc = new ErlcClient({ serverKey });
 const server = await erlc.server.get({ include: ["players", "vehicles"] });
 
 console.log(`${server.Name}: ${server.CurrentPlayers}/${server.MaxPlayers}`);
-console.table(server.Players.map((player) => ({
-  player: player.Player,
-  team: player.Team,
-  permission: player.Permission,
-})));
+console.table(
+  server.Players.map((player) => ({
+    player: player.Player,
+    team: player.Team,
+    permission: player.Permission,
+  })),
+);

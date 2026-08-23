@@ -44,7 +44,10 @@ test("published declarations provide constructor IntelliSense in TS and JS", asy
   const packageRoot = join(root, "node_modules", "erlc-api");
   await mkdir(packageRoot, { recursive: true });
   await cp(join(repository, "dist"), join(packageRoot, "dist"), { recursive: true });
-  await writeFile(join(packageRoot, "package.json"), await readFile(join(repository, "package.json")));
+  await writeFile(
+    join(packageRoot, "package.json"),
+    await readFile(join(repository, "package.json")),
+  );
 
   const baseOptions = {
     allowJs: true,
@@ -72,7 +75,15 @@ test("published declarations provide constructor IntelliSense in TS and JS", asy
     }
     for (const documented of ["serverKey", "globalToken"]) {
       const entry = completions.entries.find((candidate) => candidate.name === documented);
-      const details = service.getCompletionEntryDetails(file, position, documented, {}, entry.source, {}, entry.data);
+      const details = service.getCompletionEntryDetails(
+        file,
+        position,
+        documented,
+        {},
+        entry.source,
+        {},
+        entry.data,
+      );
       assert(details?.documentation.length, `${documented} should expose JSDoc in ${name}`);
     }
     service.dispose();
@@ -87,12 +98,41 @@ test("published declarations provide constructor IntelliSense in TS and JS", asy
     [
       "include-values.ts",
       `import { ErlcClient } from "erlc-api";\nconst erlc = new ErlcClient({ serverKey: "x" });\nerlc.server.get({ include: ["/*cursor*/"] });`,
-      ["players", "staff", "joinLogs", "queue", "killLogs", "commandLogs", "modCalls", "emergencyCalls", "vehicles"],
+      [
+        "players",
+        "staff",
+        "joinLogs",
+        "queue",
+        "killLogs",
+        "commandLogs",
+        "modCalls",
+        "emergencyCalls",
+        "vehicles",
+      ],
     ],
     [
       "command-options.ts",
       `import { ErlcClient } from "erlc-api";\nconst erlc = new ErlcClient({ serverKey: "x" });\nerlc.commands.execute(":h hi", { /*cursor*/ });`,
       ["signal"],
+    ],
+    [
+      "map-response.ts",
+      `import { fetchMapImages } from "erlc-api/maps";\nasync function run() { const result = await fetchMapImages(); result./*cursor*/ }`,
+      ["maps"],
+    ],
+    [
+      "auth-options.ts",
+      `import { createAuthorizationUrlFromServerKey } from "erlc-api/auth";\ncreateAuthorizationUrlFromServerKey({ /*cursor*/ });`,
+      ["serverKey", "applicationId"],
+    ],
+    [
+      "auth-exports.ts",
+      `import { /*cursor*/ } from "erlc-api/auth";`,
+      [
+        "extractServerIdFromServerKey",
+        "createAuthorizationUrl",
+        "createAuthorizationUrlFromServerKey",
+      ],
     ],
   ];
 
@@ -105,6 +145,29 @@ test("published declarations provide constructor IntelliSense in TS and JS", asy
     }
     service.dispose();
   }
+
+  const authSource = `import { /*cursor*/ } from "erlc-api/auth";`;
+  const authLanguage = languageService(root, "auth-jsdoc.ts", authSource, baseOptions);
+  const authCompletions = authLanguage.service.getCompletionsAtPosition(
+    authLanguage.file,
+    authLanguage.position,
+    {},
+  );
+  const helper = authCompletions?.entries.find(
+    (entry) => entry.name === "extractServerIdFromServerKey",
+  );
+  assert(helper, "auth subpath should suggest extractServerIdFromServerKey");
+  const helperDetails = authLanguage.service.getCompletionEntryDetails(
+    authLanguage.file,
+    authLanguage.position,
+    helper.name,
+    {},
+    helper.source,
+    {},
+    helper.data,
+  );
+  assert(helperDetails?.documentation.length, "Server ID helper should expose JSDoc");
+  authLanguage.service.dispose();
 });
 
 test("all public subpaths resolve declarations with modern and legacy resolution", async (context) => {
@@ -113,7 +176,10 @@ test("all public subpaths resolve declarations with modern and legacy resolution
   const packageRoot = join(root, "node_modules", "erlc-api");
   await mkdir(packageRoot, { recursive: true });
   await cp(join(repository, "dist"), join(packageRoot, "dist"), { recursive: true });
-  await writeFile(join(packageRoot, "package.json"), await readFile(join(repository, "package.json")));
+  await writeFile(
+    join(packageRoot, "package.json"),
+    await readFile(join(repository, "package.json")),
+  );
   const containingFile = join(root, "consumer.ts");
   const specifiers = ["erlc-api", "erlc-api/auth", "erlc-api/maps", "erlc-api/webhooks"];
 
@@ -123,12 +189,24 @@ test("all public subpaths resolve declarations with modern and legacy resolution
     ts.ModuleResolutionKind.Node10,
   ]) {
     for (const specifier of specifiers) {
-      const resolved = ts.resolveModuleName(specifier, containingFile, {
-        module: moduleResolution === ts.ModuleResolutionKind.NodeNext ? ts.ModuleKind.NodeNext : ts.ModuleKind.ESNext,
-        moduleResolution,
-      }, ts.sys).resolvedModule;
+      const resolved = ts.resolveModuleName(
+        specifier,
+        containingFile,
+        {
+          module:
+            moduleResolution === ts.ModuleResolutionKind.NodeNext
+              ? ts.ModuleKind.NodeNext
+              : ts.ModuleKind.ESNext,
+          moduleResolution,
+        },
+        ts.sys,
+      ).resolvedModule;
       assert(resolved, `${specifier} should resolve with moduleResolution ${moduleResolution}`);
-      assert.match(resolved.resolvedFileName, /\.d\.ts$/, `${specifier} should resolve to declarations`);
+      assert.match(
+        resolved.resolvedFileName,
+        /\.d\.ts$/,
+        `${specifier} should resolve to declarations`,
+      );
     }
   }
 });

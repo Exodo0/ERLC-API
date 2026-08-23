@@ -57,7 +57,7 @@ New reads use `GET /v2/server` with only the requested include flags. `GET /v1/s
 ## Deliberate non-features
 
 - No browser build: API credentials must remain server-side.
-- No automatic Server-Key parsing: the public docs reference its anatomy but do not expose a machine-readable format contract.
+- Server-Key parsing is limited to the documented two-segment anatomy: an alphanumeric private segment, one hyphen, and an alphanumeric Internal Server ID. The parser does not assume undocumented segment lengths.
 - No world-to-pixel conversion: official docs define map dimensions, origin, and axis orientation, but no scale or world bounds.
 - No closed webhook payload union: official docs list event categories but do not publish stable payload schemas.
 - No `resetGlobalKey`: current public-app docs place key regeneration in the API Dashboard and do not document a supported v2 reset endpoint.
